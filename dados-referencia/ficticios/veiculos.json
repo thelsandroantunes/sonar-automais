@@ -1,0 +1,425 @@
+{
+ "_aviso": "DADOS FICTÍCIOS para demonstração e testes. Placas, valores e ocorrências inventados.",
+ "veiculos": [
+  {
+   "placa": "QZA1B23",
+   "tipo": "carro",
+   "modelo": "CHEVROLET ONIX 1.0 LT",
+   "ano": "2021/2022",
+   "cor": "Branca",
+   "municipio": "Manaus",
+   "uf": "AM",
+   "cilindrada": 1000,
+   "codigo_fipe": "004458-0",
+   "fipe": {
+    "2025-12": 72900,
+    "2026-01": 72600,
+    "2026-02": 72300,
+    "2026-03": 71900,
+    "2026-04": 71500,
+    "2026-05": 71200,
+    "2026-06": 70800,
+    "2026-07": 70400,
+    "2026-08": 70100,
+    "2026-09": 69700,
+    "2026-10": 69300,
+    "2026-11": 68990
+   },
+   "preco_anunciado": 69500,
+   "consultas_30d": 4,
+   "restricao_tributaria": false,
+   "data_aquisicao": null,
+   "final_placa": 3,
+   "debitos": {
+    "ipva": 0,
+    "licenciamento": 0,
+    "multas_estaduais": 0,
+    "multas_federais": 0
+   },
+   "parceiro": {
+    "roubo_furto": [
+     "ok",
+     "Nada consta"
+    ],
+    "gravame": [
+     "ok",
+     "Gravame baixado em 14/03/2024 (quitado)"
+    ],
+    "renajud": [
+     "ok",
+     "Sem restrição"
+    ],
+    "debitos": [
+     "ok",
+     "IPVA 2026 pago · licenciamento em dia"
+    ],
+    "leilao_privado": [
+     "ok",
+     "Nenhuma passagem"
+    ],
+    "busca_apreensao": [
+     "ok",
+     "Sem indício"
+    ],
+    "multas_federais": [
+     "ok",
+     "Nenhuma"
+    ],
+    "recall": [
+     "ok",
+     "Nenhum pendente"
+    ]
+   }
+  },
+  {
+   "placa": "PHX4E56",
+   "tipo": "carro",
+   "modelo": "HYUNDAI HB20S 1.6 COMFORT",
+   "ano": "2020/2020",
+   "cor": "Prata",
+   "municipio": "Manaus",
+   "uf": "AM",
+   "cilindrada": 1600,
+   "codigo_fipe": "015140-9",
+   "fipe": {
+    "2025-12": 75200,
+    "2026-01": 74900,
+    "2026-02": 74400,
+    "2026-03": 74000,
+    "2026-04": 73700,
+    "2026-05": 73300,
+    "2026-06": 72900,
+    "2026-07": 72500,
+    "2026-08": 72200,
+    "2026-09": 71900,
+    "2026-10": 71600,
+    "2026-11": 71430
+   },
+   "preco_anunciado": 74900,
+   "consultas_30d": 11,
+   "restricao_tributaria": false,
+   "data_aquisicao": null,
+   "final_placa": 6,
+   "debitos": {
+    "ipva": 1785.75,
+    "licenciamento": 0,
+    "multas_estaduais": 295.82,
+    "multas_federais": 0
+   },
+   "parceiro": {
+    "roubo_furto": [
+     "ok",
+     "Nada consta"
+    ],
+    "gravame": [
+     "atencao",
+     "ATIVO · alienação fiduciária desde 05/2022 — exija a quitação"
+    ],
+    "renajud": [
+     "ok",
+     "Sem restrição"
+    ],
+    "debitos": [
+     "critico",
+     "IPVA 2026 em atraso + 1 multa estadual"
+    ],
+    "leilao_privado": [
+     "ok",
+     "Nenhuma passagem"
+    ],
+    "busca_apreensao": [
+     "ok",
+     "Sem indício"
+    ],
+    "multas_federais": [
+     "ok",
+     "Nenhuma"
+    ],
+    "recall": [
+     "atencao",
+     "1 recall pendente (airbag do passageiro)"
+    ]
+   }
+  },
+  {
+   "placa": "OAB7C89",
+   "tipo": "carro",
+   "modelo": "TOYOTA COROLLA 2.0 XEI",
+   "ano": "2023/2024",
+   "cor": "Preta",
+   "municipio": "Manaus",
+   "uf": "AM",
+   "cilindrada": 2000,
+   "codigo_fipe": "002204-6",
+   "fipe": {
+    "2025-12": 131500,
+    "2026-01": 130800,
+    "2026-02": 130100,
+    "2026-03": 129400,
+    "2026-04": 128900,
+    "2026-05": 128300,
+    "2026-06": 127600,
+    "2026-07": 127000,
+    "2026-08": 126400,
+    "2026-09": 125900,
+    "2026-10": 125300,
+    "2026-11": 124800
+   },
+   "preco_anunciado": 118000,
+   "consultas_30d": 27,
+   "restricao_tributaria": true,
+   "data_aquisicao": "2024-03-15",
+   "final_placa": 9,
+   "debitos": {
+    "ipva": 4992,
+    "licenciamento": 0,
+    "multas_estaduais": 0,
+    "multas_federais": 880.41
+   },
+   "parceiro": {
+    "roubo_furto": [
+     "atencao",
+     "Histórico: furto em 2024, recuperado"
+    ],
+    "gravame": [
+     "critico",
+     "ATIVO · alienação fiduciária"
+    ],
+    "renajud": [
+     "critico",
+     "Restrição de transferência ativa"
+    ],
+    "debitos": [
+     "critico",
+     "IPVA 2025 e 2026 em atraso"
+    ],
+    "leilao_privado": [
+     "critico",
+     "1 leilão de seguradora · 08/2025 · média monta"
+    ],
+    "busca_apreensao": [
+     "critico",
+     "Indício de busca e apreensão"
+    ],
+    "multas_federais": [
+     "critico",
+     "1 multa PRF · R$ 880,41"
+    ],
+    "recall": [
+     "ok",
+     "Nenhum pendente"
+    ]
+   }
+  },
+  {
+   "placa": "QZB2E34",
+   "tipo": "moto",
+   "modelo": "HONDA CG 160 FAN",
+   "ano": "2022/2023",
+   "cor": "Vermelha",
+   "municipio": "Manacapuru",
+   "uf": "AM",
+   "cilindrada": 160,
+   "codigo_fipe": "811138-0",
+   "fipe": {
+    "2025-12": 18900,
+    "2026-01": 18800,
+    "2026-02": 18700,
+    "2026-03": 18600,
+    "2026-04": 18500,
+    "2026-05": 18400,
+    "2026-06": 18300,
+    "2026-07": 18200,
+    "2026-08": 18100,
+    "2026-09": 18000,
+    "2026-10": 17900,
+    "2026-11": 17800
+   },
+   "preco_anunciado": 15900,
+   "consultas_30d": 6,
+   "restricao_tributaria": false,
+   "data_aquisicao": null,
+   "final_placa": 4,
+   "debitos": {
+    "ipva": 267,
+    "licenciamento": 0,
+    "multas_estaduais": 0,
+    "multas_federais": 0
+   },
+   "parceiro": {
+    "roubo_furto": [
+     "ok",
+     "Nada consta"
+    ],
+    "gravame": [
+     "ok",
+     "Sem gravame"
+    ],
+    "renajud": [
+     "ok",
+     "Sem restrição"
+    ],
+    "debitos": [
+     "atencao",
+     "IPVA 2026 em atraso"
+    ],
+    "leilao_privado": [
+     "ok",
+     "Nenhuma passagem"
+    ],
+    "busca_apreensao": [
+     "ok",
+     "Sem indício"
+    ],
+    "multas_federais": [
+     "ok",
+     "Nenhuma"
+    ],
+    "recall": [
+     "ok",
+     "Nenhum pendente"
+    ]
+   }
+  },
+  {
+   "placa": "RTM3C21",
+   "tipo": "carro",
+   "modelo": "FIAT STRADA 1.4 ENDURANCE",
+   "ano": "2021/2021",
+   "cor": "Branca",
+   "municipio": "Manaus",
+   "uf": "AM",
+   "cilindrada": 1400,
+   "codigo_fipe": "001478-7",
+   "fipe": {
+    "2025-12": 92100,
+    "2026-01": 91900,
+    "2026-02": 91600,
+    "2026-03": 91300,
+    "2026-04": 91000,
+    "2026-05": 90800,
+    "2026-06": 90500,
+    "2026-07": 90300,
+    "2026-08": 90100,
+    "2026-09": 89900,
+    "2026-10": 89700,
+    "2026-11": 89500
+   },
+   "preco_anunciado": 91000,
+   "consultas_30d": 2,
+   "restricao_tributaria": false,
+   "data_aquisicao": null,
+   "final_placa": 1,
+   "debitos": {
+    "ipva": 0,
+    "licenciamento": 0,
+    "multas_estaduais": 0,
+    "multas_federais": 0
+   },
+   "parceiro": {
+    "roubo_furto": [
+     "ok",
+     "Nada consta"
+    ],
+    "gravame": [
+     "ok",
+     "Gravame baixado em 23/11/2026"
+    ],
+    "renajud": [
+     "ok",
+     "Sem restrição"
+    ],
+    "debitos": [
+     "ok",
+     "Em dia"
+    ],
+    "leilao_privado": [
+     "ok",
+     "Nenhuma passagem"
+    ],
+    "busca_apreensao": [
+     "ok",
+     "Sem indício"
+    ],
+    "multas_federais": [
+     "ok",
+     "Nenhuma"
+    ],
+    "recall": [
+     "ok",
+     "Nenhum pendente"
+    ]
+   }
+  },
+  {
+   "placa": "PXA9F87",
+   "tipo": "carro",
+   "modelo": "RENAULT KWID 1.0 ZEN",
+   "ano": "2022/2022",
+   "cor": "Cinza",
+   "municipio": "Manaus",
+   "uf": "AM",
+   "cilindrada": 1000,
+   "codigo_fipe": "025275-2",
+   "fipe": {
+    "2025-12": 55100,
+    "2026-01": 54900,
+    "2026-02": 54600,
+    "2026-03": 54300,
+    "2026-04": 54000,
+    "2026-05": 53700,
+    "2026-06": 53400,
+    "2026-07": 53100,
+    "2026-08": 52900,
+    "2026-09": 52700,
+    "2026-10": 52500,
+    "2026-11": 52300
+   },
+   "preco_anunciado": 53900,
+   "consultas_30d": 8,
+   "restricao_tributaria": false,
+   "data_aquisicao": null,
+   "final_placa": 7,
+   "debitos": {
+    "ipva": 0,
+    "licenciamento": 0,
+    "multas_estaduais": 0,
+    "multas_federais": 0
+   },
+   "parceiro": {
+    "roubo_furto": [
+     "ok",
+     "Nada consta"
+    ],
+    "gravame": [
+     "ok",
+     "Sem gravame"
+    ],
+    "renajud": [
+     "ok",
+     "Sem restrição"
+    ],
+    "debitos": [
+     "ok",
+     "Em dia"
+    ],
+    "leilao_privado": [
+     "ok",
+     "Nenhuma passagem"
+    ],
+    "busca_apreensao": [
+     "ok",
+     "Sem indício"
+    ],
+    "multas_federais": [
+     "ok",
+     "Nenhuma"
+    ],
+    "recall": [
+     "ok",
+     "Nenhum pendente"
+    ]
+   }
+  }
+ ]
+}

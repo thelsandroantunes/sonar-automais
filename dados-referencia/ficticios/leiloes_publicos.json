@@ -1,0 +1,70 @@
+{
+ "_aviso": "FICTÍCIO. A data do 5º leilão do Detran-AM (27/11/2026) é real; lotes, placas e valores são inventados.",
+ "lotes": [
+  {
+   "fonte": "detran_am",
+   "orgao": "Detran-AM",
+   "leilao": "Edital 05/2026",
+   "data": "2026-11-27",
+   "uf": "AM",
+   "lote": "45",
+   "placa": "JXA1234",
+   "veiculo": "VW GOL 1.0 2014",
+   "condicao": "recuperável",
+   "lance_inicial": 9800,
+   "fipe": 24500
+  },
+  {
+   "fonte": "detran_am",
+   "orgao": "Detran-AM",
+   "leilao": "Edital 05/2026",
+   "data": "2026-11-27",
+   "uf": "AM",
+   "lote": "112",
+   "placa": "JXB5678",
+   "veiculo": "HONDA CG 150 2016",
+   "condicao": "recuperável",
+   "lance_inicial": 3200,
+   "fipe": 9900
+  },
+  {
+   "fonte": "detran_am",
+   "orgao": "Detran-AM",
+   "leilao": "Edital 05/2026",
+   "data": "2026-11-27",
+   "uf": "AM",
+   "lote": "203",
+   "placa": "JXC9012",
+   "veiculo": "FIAT PALIO 2009",
+   "condicao": "sucata",
+   "lance_inicial": 1500,
+   "fipe": null
+  },
+  {
+   "fonte": "prf",
+   "orgao": "PRF-AM",
+   "leilao": "Edital 2026-2",
+   "data": "2026-12-10",
+   "uf": "AM",
+   "lote": "18",
+   "placa": "JXD3456",
+   "veiculo": "TOYOTA HILUX 2015",
+   "condicao": "recuperável",
+   "lance_inicial": 62000,
+   "fipe": 118900
+  },
+  {
+   "fonte": "pncp",
+   "orgao": "Prefeitura de Manacapuru",
+   "leilao": "Leilão eletrônico 03/2025",
+   "data": "2025-03-20",
+   "uf": "AM",
+   "lote": "3",
+   "placa": "QZB2E34",
+   "veiculo": "HONDA CG 160 2023",
+   "condicao": "recuperável",
+   "lance_inicial": 8900,
+   "fipe": 17800
+  }
+ ]
+}

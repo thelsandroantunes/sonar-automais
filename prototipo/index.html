@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sonar Auto+ · protótipo v3</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Sonar Auto+ — demonstração com dados fictícios da consulta veicular pela placa (Amazonas).">
+<meta name="theme-color" content="#0b0b0c">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b0b0c'/%3E%3Ccircle cx='32' cy='32' r='20' fill='none' stroke='%23e8ff59' stroke-width='4'/%3E%3Ccircle cx='32' cy='32' r='10' fill='none' stroke='%23e8ff59' stroke-width='4' opacity='.6'/%3E%3Ccircle cx='32' cy='32' r='3' fill='%23e8ff59'/%3E%3C/svg%3E">
+<style>
+:root,[data-theme=dark]{--bg:#0b0b0c;--bg2:#121214;--card:#17171a;--ink:#f3f3f4;--mut:#a1a1aa;--line:#2a2a2f;--acc:#fff;--accInk:#0b0b0c;--hl:#e8ff59;--ok:#4ade80;--warn:#fbbf24;--bad:#f87171;--info:#60a5fa;--soft:#1f1f23;--glow:rgba(232,255,89,.12)}
+[data-theme=light]{--bg:#fff;--bg2:#f5f5f4;--card:#fff;--ink:#0b0b0c;--mut:#5b5b63;--line:#e4e4e7;--acc:#0b0b0c;--accInk:#fff;--hl:#4338ca;--ok:#15803d;--warn:#b45309;--bad:#b91c1c;--info:#1d4ed8;--soft:#f4f4f5;--glow:rgba(67,56,202,.08)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+header{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.bar{max-width:1220px;margin:auto;display:flex;align-items:center;gap:14px;padding:11px 20px;flex-wrap:wrap}
+.logo{font-weight:900;letter-spacing:-.5px;font-size:19px;cursor:pointer}.logo i{font-style:normal;color:var(--hl)}
+nav{display:flex;gap:2px;flex-wrap:wrap}nav a{color:var(--mut);padding:6px 9px;border-radius:8px;font-size:14px;cursor:pointer}
+nav a.on{color:var(--ink);background:var(--soft);font-weight:600}
+.right{margin-left:auto;display:flex;gap:8px;align-items:center}
+.tog{font:inherit;font-size:13px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+main{max-width:1220px;margin:auto;padding:0 20px 90px}
+section.view{display:none;padding-top:24px}section.view.on{display:block}
+h1{font-size:clamp(32px,5vw,56px);line-height:1.05;letter-spacing:-2px;margin:12px 0 16px;font-weight:850}
+h2{font-size:clamp(22px,2.8vw,32px);letter-spacing:-1px;line-height:1.15;margin:0 0 10px}
+h3{font-size:16px;margin:0 0 6px}
+.mut{color:var(--mut)}.small{font-size:13px}.xs{font-size:12px}.hl{color:var(--hl)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
+.grid{display:grid;gap:14px}.g2{grid-template-columns:repeat(auto-fit,minmax(340px,1fr))}.g3{grid-template-columns:repeat(auto-fit,minmax(270px,1fr))}.g4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--acc);border-radius:12px;padding:11px 18px;font:inherit;font-weight:700;cursor:pointer;background:var(--acc);color:var(--accInk)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}.btn.sm{padding:7px 12px;font-size:13px;border-radius:10px}
+.pill{display:inline-block;flex-shrink:0;font-size:12px;padding:2px 9px;border-radius:99px;border:1px solid var(--line);color:var(--mut);font-weight:600;white-space:nowrap}
+.pill.ok{border-color:var(--ok);color:var(--ok)}.pill.warn{border-color:var(--warn);color:var(--warn)}.pill.bad{border-color:var(--bad);color:var(--bad)}.pill.hl{border-color:var(--hl);color:var(--hl)}.pill.info{border-color:var(--info);color:var(--info)}
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:34px;align-items:center;padding:26px 0 40px;position:relative}
+.hero:before{content:"";position:absolute;inset:-40px -20px auto;height:420px;background:radial-gradient(600px 300px at 20% 30%,var(--glow),transparent 70%);z-index:-1}
+@media(max-width:880px){.hero{grid-template-columns:1fr}}
+.lead{font-size:18px;color:var(--mut);max-width:580px}
+.plate{display:flex;gap:8px;margin:18px 0 8px;flex-wrap:wrap}
+.plate input{flex:1;min-width:200px;padding:13px 16px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:22px;font-weight:800;letter-spacing:4px;text-transform:uppercase}
+.plate input:focus{outline:none;border-color:var(--hl)}
+.demo{font-size:13px;color:var(--mut)}.demo b{cursor:pointer;color:var(--ink);text-decoration:underline dotted;margin-right:6px}
+.mercosul{display:inline-flex;flex-direction:column;border:3px solid #222;border-radius:8px;background:#fff;color:#111;min-width:170px;overflow:hidden}
+.mercosul .top{background:#1d4ed8;color:#fff;font-size:10px;font-weight:700;letter-spacing:1px;text-align:center;padding:2px}
+.mercosul .num{font-size:30px;font-weight:900;letter-spacing:4px;text-align:center;padding:1px 10px;font-family:ui-monospace,monospace}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:12px;overflow:hidden;flex-wrap:wrap}
+.seg button{font:inherit;font-size:13px;font-weight:700;padding:8px 13px;border:0;background:transparent;color:var(--mut);cursor:pointer}
+.seg button.on{background:var(--acc);color:var(--accInk)}
+.kpi .n{font-size:30px;font-weight:850;letter-spacing:-1px;line-height:1.05}.kpi .l{font-size:13px;color:var(--mut)}
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.item{border:1px solid var(--line);border-radius:14px;padding:14px;background:var(--card);position:relative}
+.item.bad{border-color:var(--bad)}.item.warn{border-color:var(--warn)}
+.item .hd{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;margin-bottom:4px}
+.item .src{font-size:12px;color:var(--mut);margin-top:8px;border-top:1px dashed var(--line);padding-top:6px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.lockbox{display:flex;align-items:center;gap:8px;color:var(--mut);font-size:13px;padding:8px 0}
+.lockbox b{color:var(--ink)}
+.ic{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;font-size:13px;font-weight:900;margin-right:6px;color:#111}
+.ic.ok{background:var(--ok)}.ic.warn{background:var(--warn)}.ic.bad{background:var(--bad)}.ic.lock{background:var(--line);color:var(--mut)}
+table{width:100%;border-collapse:collapse;font-size:14px}td,th{text-align:left;padding:8px;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--mut);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.4px}
+.scroll{overflow-x:auto}
+.c{text-align:center}
+.steps{display:grid;gap:6px;margin:12px 0}.steps div{font-size:14px;padding:7px 12px;border-radius:10px;background:var(--soft);color:var(--mut);display:flex;justify-content:space-between}
+.steps div.done{color:var(--ink)}.steps div.done:after{content:"✓";color:var(--ok);font-weight:800}.steps div.run{color:var(--hl);font-weight:600}.steps div.run:after{content:"…"}
+.alert{border:1px solid var(--hl);border-radius:12px;padding:11px 14px;background:var(--glow);font-size:14px;margin:12px 0}
+.plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:10px}
+.plan{border:1px solid var(--line);border-radius:16px;padding:16px;background:var(--card)}.plan.star{border-color:var(--hl);box-shadow:0 0 0 1px var(--hl)}
+.plan .p{font-size:26px;font-weight:850;letter-spacing:-1px;margin:4px 0}.plan ul{padding-left:16px;margin:8px 0;font-size:13px}.plan li{margin:3px 0}
+.dec{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.dec button{font:inherit;font-size:12px;font-weight:700;padding:5px 9px;border:0;background:transparent;color:var(--mut);cursor:pointer}
+.dec button.on.mvp{background:var(--ok);color:#06240f}.dec button.on.depois{background:var(--warn);color:#2b1a00}.dec button.on.descartar{background:var(--bad);color:#2a0606}
+select.f,input.f{font:inherit;font-size:13px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--bg2);color:var(--ink)}
+.sum{position:sticky;bottom:12px;margin-top:16px;display:flex;gap:18px;flex-wrap:wrap;align-items:center;padding:13px 18px;border-radius:14px;background:var(--acc);color:var(--accInk);font-size:14px;z-index:5}
+.sum b{font-size:17px}
+textarea{width:100%;min-height:130px;font:12px ui-monospace,monospace;background:var(--bg2);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px}
+.tiles{display:grid;grid-template-columns:repeat(8,54px);grid-auto-rows:54px;gap:5px}
+.tile{border-radius:9px;display:grid;place-items:center;font-weight:800;font-size:14px;cursor:pointer;color:#111;border:2px solid transparent}
+.tile.sel{border-color:var(--ink)}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:13px}.legend span:before{content:"";display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px;background:var(--c)}
+.chk label{display:flex;gap:8px;align-items:flex-start;font-size:14px;padding:4px 0}
+footer{border-top:1px solid var(--line);padding:22px 20px;text-align:center;color:var(--mut);font-size:13px}
+svg text{fill:var(--ink);font-family:inherit}
+</style>
+</head>
+<body>
+<header><div class="bar">
+  <a class="logo" onclick="go('inicio')">Sonar <i>Auto+</i></a>
+  <nav id="nav">
+    <a data-v="inicio" class="on">Início</a><a data-v="consulta">Consulta</a><a data-v="servicos">Serviços</a><a data-v="planos">Planos</a>
+    <a data-v="painel">Painel revenda</a><a data-v="base">Base pública</a><a data-v="expansao">Expansão</a>
+    <a data-v="decisao">Decisão ★</a><a data-v="estrategia">Estratégia</a>
+  </nav>
+  <div class="right"><span class="pill hl">protótipo v3 · dados fictícios</span><button class="tog" onclick="tema()">◐</button></div>
+</div></header>
+
+<main>
+<section class="view on" id="s-inicio">
+  <div class="hero">
+    <div>
+      <span class="pill hl">Sonar Auto+ · Brasil, começando pelo Amazonas</span>
+      <h1>Digite a placa. <span class="hl">Veja em cores se vale comprar.</span></h1>
+      <p class="lead">Nota de 0 a 100, quanto o carro vale de verdade e quanto oferecer. Com as regras do seu estado: no Amazonas, Zona Franca, IPVA 2026 e multas publicadas no Diário Oficial de Manaus.</p>
+      <div class="plate"><input id="pIni" maxlength="8" placeholder="ABC1D23"><button class="btn" onclick="consultar(val('pIni'))">Ver FIPE grátis</button></div>
+      <div class="demo">Demonstração: <b onclick="consultar('QZA1B23')">QZA1B23</b><b onclick="consultar('PHX4E56')">PHX4E56</b><b onclick="consultar('OAB7C89')">OAB7C89</b><b onclick="consultar('QZB2E34')">QZB2E34 (moto)</b></div>
+    </div>
+    <div class="card" id="heroCard"></div>
+  </div>
+  <div class="grid g4">
+    <div class="card kpi"><div class="n">129,9 mil</div><div class="l">seminovos vendidos no AM em 2025 (recorde)</div></div>
+    <div class="card kpi"><div class="n">156 mil</div><div class="l">multas por radar em Manaus em 2 meses</div></div>
+    <div class="card kpi"><div class="n">46%</div><div class="l">das entradas novas na frota de Manaus são motos</div></div>
+    <div class="card kpi"><div class="n">0</div><div class="l">concorrentes com sede ou foco no Amazonas</div></div>
+  </div>
+  <div class="alert">Como usar: faça uma consulta e troque o plano no topo do laudo (Visitante → Completa) para ver o que cada um libera. Veja também a aba <b>Serviços</b> (dono do veículo, radar de leilões, quem vende, comissões). Depois marque, em <b>Decisão ★</b>, o que entra no MVP e em qual plano.</div>
+</section>
+
+<section class="view" id="s-consulta">
+  <div class="xs mut" style="margin-bottom:4px">Consultar por:</div><div class="seg" id="segEntrada" style="margin-bottom:10px"></div>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between">
+    <div id="entradaBox" style="max-width:620px;flex:1"></div>
+    <div><div class="xs mut" style="margin-bottom:4px">Ver como o plano:</div><div class="seg" id="segPlano"></div></div>
+  </div>
+  <div class="demo" style="margin-top:6px">Demo: <b onclick="consultar('QZA1B23')">QZA1B23</b><b onclick="consultar('PHX4E56')">PHX4E56</b><b onclick="consultar('OAB7C89')">OAB7C89</b><b onclick="consultar('QZB2E34')">QZB2E34</b></div>
+  <div id="prog" class="steps"></div>
+  <div id="laudo"></div>
+</section>
+
+<section class="view" id="s-servicos">
+  <h2>Serviços além da placa</h2>
+  <p class="mut small" style="max-width:880px">Telas de demonstração com dados fictícios. Cada bloco mostra o plano e a situação decididos na aba Decisão ★ (MVP, depois, descartado). A ordem segue o teste com o menor custo possível: dado público e comissão primeiro, parceiro pago só quando alguém paga.</p>
+  <div class="grid g2">
+    <div class="card" id="svDono"></div>
+    <div class="card" id="svRadar"></div>
+  </div>
+  <div class="grid g3" style="margin-top:14px">
+    <div class="card" id="svVende"></div>
+    <div class="card" id="svCompra"></div>
+    <div class="card" id="svComissao"></div>
+  </div>
+  <div class="card" style="margin-top:14px" id="svEmpresa"></div>
+</section>
+
+<section class="view" id="s-planos">
+  <h2>Planos — o que cada um pode fazer</h2>
+  <p class="mut small">Preços de referência para validar. Pacote “Procurando carro”: 3 laudos completos por R$ 99. A tabela segue as decisões da aba Decisão ★.</p>
+  <div class="plans" id="planCards"></div>
+  <div class="card scroll" style="margin-top:14px"><table id="tPlanos"></table></div>
+  <div class="grid g2" style="margin-top:14px">
+    <div class="card"><h3>Preço da consulta completa vs concorrentes</h3><div class="xs mut">varejo, out–nov/2026</div><div id="gConc"></div></div>
+    <div class="card"><h3>Para onde vai cada R$ 39,90</h3><div class="xs mut">laudo completo, custo de referência com base pública e volume</div><div id="gMargem"></div></div>
+  </div>
+</section>
+
+<section class="view" id="s-painel">
+  <h2>Painel da revenda <span class="pill" style="letter-spacing:0;vertical-align:middle">Pro · exemplo: Auto Rio Negro Veículos (fictícia)</span></h2>
+  <div class="grid g4" id="pKpis"></div>
+  <div class="grid g3" style="margin-top:14px">
+    <div class="card"><h3>Estoque por situação</h3><div id="gEstoque"></div></div>
+    <div class="card"><h3>Alertas por tipo (30 dias)</h3><div id="gAlertas"></div></div>
+    <div class="card"><h3>Laudos por mês</h3><div id="gMes"></div></div>
+  </div>
+  <div class="card scroll" style="margin-top:14px"><h3>Placas monitoradas</h3><table id="tEstoque"></table></div>
+</section>
+
+<section class="view" id="s-base">
+  <h2>Base própria com dados públicos</h2>
+  <p class="mut small" style="max-width:860px">Princípio: público primeiro; parceiro pago só onde não existe dado aberto. Cada fonte que entra reduz o custo do laudo e cria algo que os concorrentes nacionais não têm (ex.: multas publicadas no Diário Oficial de Manaus).</p>
+  <div class="alert"><b>Validado em 24/11/2026 no PNCP:</b> 172 leilões publicados no Brasil de 1 a 24/11, 42 de veículos e 18 placas já no texto do objeto (os itens trazem mais). No AM nenhum leilão de veículo saiu no PNCP no período — aqui os editais do Detran-AM pesam mais.</div>
+  <div class="card scroll"><table id="tFontes"></table></div>
+  <div class="grid g2" style="margin-top:14px">
+    <div class="card"><h3>Custo do laudo completo</h3><div class="xs mut">referência por consulta</div><div id="gCusto"></div></div>
+    <div class="card"><h3>Registros na base própria (projeção fictícia, AM)</h3><div id="gBase"></div></div>
+  </div>
+</section>
+
+<section class="view" id="s-expansao">
+  <h2>Expansão por ondas</h2>
+  <p class="mut small">Todos os estados já recebem o laudo nacional. A onda liga o pacote de regras do estado. Clique em um estado.</p>
+  <div class="grid g2">
+    <div class="card"><div class="tiles" id="tiles"></div><div class="legend" style="margin-top:12px" id="legend"></div></div>
+    <div class="card" id="ufInfo"></div>
+  </div>
+  <div class="card scroll" style="margin-top:14px"><table id="tOndas"></table></div>
+</section>
+
+<section class="view" id="s-decisao">
+  <h2>Decisão: o que entra, em qual plano</h2>
+  <p class="mut small" style="max-width:880px">Recomendação = minha sugestão com base na pesquisa. Você escolhe o plano mínimo e se entra no MVP. Custos de referência (≈ precisa cotação). “Público” = custo zero com a base própria.</p>
+  <div class="scroll"><table id="tDec"></table></div>
+  <div class="sum" id="sum"></div>
+  <div class="card" style="margin-top:16px"><h3>Resumo da decisão (copie e cole na conversa)</h3><textarea id="resumo" readonly></textarea>
+  <div style="margin-top:8px;display:flex;gap:8px"><button class="btn sm" onclick="copiar()">Copiar</button><button class="btn sm ghost" onclick="recomendado()">Voltar à recomendação</button></div></div>
+</section>
+
+<section class="view" id="s-estrategia">
+  <h2>Estratégia em uma página</h2>
+  <div class="grid g3">
+    <div class="card"><span class="pill hl">Posicionamento</span><p>A consulta que entende as regras do seu estado — e mostra em números e cores se vale comprar.</p></div>
+    <div class="card"><span class="pill hl">Princípio de dados</span><p>Público primeiro (FIPE, PNCP, Detran-AM, Diário Oficial de Manaus). Parceiro só para roubo/furto, gravame, RENAJUD, leilão de seguradora e débitos.</p></div>
+    <div class="card"><span class="pill hl">Base técnica</span><p>Mesma do Radar Licita+: AWS, PostgreSQL, Cognito, Asaas, coleta agendada com fila, limites por plano, visitante e alertas.</p></div>
+  </div>
+  <h3 style="margin-top:20px">Ordem do teste com o menor custo possível</h3>
+  <div class="card scroll"><table id="tOrdem"></table></div>
+  <h3 style="margin-top:20px">Metas dos 6 primeiros meses no AM</h3>
+  <div class="grid g3" id="metas"></div>
+  <h3 style="margin-top:20px">Linha do tempo</h3>
+  <div id="gTempo" class="card"></div>
+</section>
+</main>
+<footer>CAR · Sonar Auto+ · protótipo v3 · 24/11/2026 · todos os dados de placas, revendas e projeções são fictícios</footer>
+
+<script>
+const $=id=>document.getElementById(id);const val=id=>$(id).value;
+const brl=v=>v==null?'—':v.toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:Math.abs(v)>=1000?0:2});
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue('--'+n).trim();
+function go(v){document.querySelectorAll('.view').forEach(s=>s.classList.toggle('on',s.id==='s-'+v));document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('on',a.dataset.v===v));scrollTo(0,0);desenhaTudo()}
+document.querySelectorAll('#nav a').forEach(a=>a.onclick=()=>go(a.dataset.v));
+function tema(){const h=document.documentElement;h.dataset.theme=h.dataset.theme==='dark'?'light':'dark';desenhaTudo();if(atual)render()}
+// ---- gráficos SVG simples ----
+function gauge(n,cor){const a=Math.PI*(1-(n??0)/100),x=100+80*Math.cos(a),y=100-80*Math.sin(a);
+ return `<svg viewBox="0 0 200 118" width="200"><path d="M20 100 A80 80 0 0 1 180 100" stroke="${css('line')}" stroke-width="16" fill="none" stroke-linecap="round"/>
+ ${n==null?'':`<path d="M20 100 A80 80 0 0 1 ${x.toFixed(1)} ${y.toFixed(1)}" stroke="${cor}" stroke-width="16" fill="none" stroke-linecap="round"/>`}
+ <text x="100" y="96" text-anchor="middle" font-size="40" font-weight="900" style="fill:${n==null?css('mut'):cor}">${n==null?'?':n}</text><text x="100" y="114" text-anchor="middle" font-size="11" style="fill:${css('mut')}">de 100</text></svg>`}
+function barsH(rows,fmt=brl,max){max=max||Math.max(...rows.map(r=>Math.abs(r.v)))||1;
+ return rows.map(r=>`<div style="margin:8px 0"><div style="display:flex;justify-content:space-between;font-size:13px"><span>${r.l}</span><b style="color:${r.c||'inherit'}">${fmt(r.v)}</b></div>
+ <div style="height:12px;background:${css('soft')};border-radius:6px;overflow:hidden;margin-top:3px"><div style="height:100%;width:${Math.max(2,Math.abs(r.v)/max*100)}%;background:${r.c||css('hl')};border-radius:6px"></div></div></div>`).join('')}
+function line(vals,labels){const w=320,h=110,p=8,mn=Math.min(...vals),mx=Math.max(...vals),sx=(w-2*p)/(vals.length-1),sy=v=>h-p-(v-mn)/((mx-mn)||1)*(h-2*p-14);
+ const pts=vals.map((v,i)=>`${p+i*sx},${sy(v)}`).join(' ');
+ return `<svg viewBox="0 0 ${w} ${h+16}" width="100%"><polyline points="${pts}" fill="none" stroke="${css('hl')}" stroke-width="3"/>${vals.map((v,i)=>`<circle cx="${p+i*sx}" cy="${sy(v)}" r="${i===vals.length-1?4.5:2.5}" fill="${css('hl')}"/>`).join('')}
+ <text x="${p}" y="${h+12}" font-size="10" style="fill:${css('mut')}">${labels[0]}</text><text x="${w-p}" y="${h+12}" font-size="10" text-anchor="end" style="fill:${css('mut')}">${labels[1]}</text></svg>`}
+function donut(parts,centro,sub){const tot=parts.reduce((a,p)=>a+p.v,0)||1;let ang=-Math.PI/2;const R=52,r=34,cx=64,cy=64;
+ const arcs=parts.filter(p=>p.v>0).map(p=>{const a2=ang+p.v/tot*Math.PI*2,lg=a2-ang>Math.PI?1:0;const d=`M${cx+R*Math.cos(ang)} ${cy+R*Math.sin(ang)} A${R} ${R} 0 ${lg} 1 ${cx+R*Math.cos(a2-0.0001)} ${cy+R*Math.sin(a2-0.0001)} L${cx+r*Math.cos(a2-0.0001)} ${cy+r*Math.sin(a2-0.0001)} A${r} ${r} 0 ${lg} 0 ${cx+r*Math.cos(ang)} ${cy+r*Math.sin(ang)}Z`;ang=a2;return `<path d="${d}" fill="${p.c}"/>`}).join('');
+ return `<div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap"><svg viewBox="0 0 128 128" width="128">${parts.some(p=>p.v>0)?arcs:`<circle cx="64" cy="64" r="43" fill="none" stroke="${css('ok')}" stroke-width="18"/>`}<text x="64" y="66" text-anchor="middle" font-size="${String(centro).length>7?11:15}" font-weight="900">${centro}</text><text x="64" y="80" text-anchor="middle" font-size="9" style="fill:${css('mut')}">${sub||''}</text></svg>
+ <div class="small">${parts.map(p=>`<div><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:${p.c};margin-right:6px"></span>${p.l}: <b>${p.fmt?p.fmt(p.v):brl(p.v)}</b></div>`).join('')}</div></div>`}
+function colunas(vals,labels,cor){const mx=Math.max(...vals)||1;return `<div style="display:flex;gap:6px;align-items:flex-end;height:130px;margin-top:8px">${vals.map((v,i)=>`<div style="flex:1;text-align:center"><div class="xs"><b>${v.toLocaleString('pt-BR')}</b></div><div style="height:${v/mx*95}px;background:${cor||css('hl')};border-radius:5px 5px 0 0;opacity:${i===vals.length-1?1:.6}"></div><div class="xs mut">${labels[i]}</div></div>`).join('')}</div>`}
+
+// ================= planos e itens =================
+const NIVEL={visitante:0,gratis:1,essencial:2,completa:3,pro:4,empresa:5};
+const NOMEP={visitante:'Visitante',gratis:'Grátis',essencial:'Essencial',completa:'Completa',pro:'Pro (revenda)',empresa:'Empresa / API'};
+const ITENS=[
+ {id:'fipe',nome:'Valor FIPE + histórico 12 meses',plano:'visitante',par:0.06,pub:0.06,rec:'mvp',fonte:'Parallelum (grátis) + placa→modelo',publico:true,motivo:'Gancho grátis, separado do leilão.'},
+ {id:'contador',nome:'Contador “placa consultada N vezes”',plano:'visitante',par:0,pub:0,rec:'mvp',fonte:'registros próprios',publico:true,motivo:'Diferencial: nenhum concorrente mostra.'},
+ {id:'ipva_sim',nome:'Simulador de IPVA (regras da UF)',plano:'gratis',par:0,pub:0,rec:'mvp',fonte:'Sefaz-AM (regras 2026)',publico:true,motivo:'AM mudou o IPVA em 2026; ninguém simula.'},
+ {id:'antigolpe',nome:'Checklist antigolpe (falso intermediário)',plano:'gratis',par:0,pub:0,rec:'mvp',fonte:'conteúdo próprio',publico:true,motivo:'Golpe comum na OLX/Marketplace/WhatsApp.'},
+ {id:'roubo',nome:'Roubo e furto',plano:'essencial',par:3.00,pub:3.00,rec:'mvp',fonte:'parceiro',motivo:'Básico esperado (no AM, em queda: não é a chamada principal).'},
+ {id:'gravame',nome:'Gravame ativo ou baixado',plano:'essencial',par:2.50,pub:2.50,rec:'mvp',fonte:'parceiro',motivo:'Risco real de comprar carro financiado.'},
+ {id:'renajud',nome:'Restrição judicial (RENAJUD)',plano:'essencial',par:1.50,pub:1.50,rec:'mvp',fonte:'parceiro',motivo:'Impede a transferência.'},
+ {id:'debitos',nome:'IPVA, licenciamento e multas do Detran',plano:'essencial',par:0.30,pub:0.30,rec:'mvp',fonte:'Celcoin/Zapay/Infosimples',motivo:'Barato e dá receita (pagar/parcelar no app).'},
+ {id:'mdiario',nome:'Multas publicadas no Diário Oficial de Manaus',plano:'essencial',par:0.22,pub:0,rec:'mvp',fonte:'IMMU / Diário Oficial do Município',publico:true,motivo:'Pega a multa cuja carta não chegou ao dono.'},
+ {id:'zfm',nome:'Restrição tributária Zona Franca',plano:'essencial',par:0,pub:0,rec:'mvp',fonte:'Detran-AM (cadastro estadual)',publico:true,motivo:'Exclusivo do AM; nenhum laudo nacional destaca.'},
+ {id:'leilao_pub',nome:'Leilão público (Detran-AM, PNCP, prefeituras)',plano:'essencial',par:2.00,pub:0,rec:'mvp',fonte:'PNCP + editais do Detran-AM',publico:true,motivo:'Base própria, custo zero, mesma coleta do LIC.'},
+ {id:'leilao_priv',nome:'Leilão de seguradoras/bancos (com fotos)',plano:'completa',par:10.00,pub:10.00,rec:'mvp',fonte:'parceiro',motivo:'Item que mais pesa no preço do carro; não existe aberto.'},
+ {id:'ba',nome:'Indício de busca e apreensão',plano:'completa',par:1.50,pub:1.50,rec:'mvp',fonte:'parceiro + DJEN (a validar)',motivo:'Mostrar como alerta, nunca como certeza.'},
+ {id:'mfed',nome:'Multas federais (PRF, DNIT, ANTT)',plano:'completa',par:2.00,pub:2.00,rec:'mvp',fonte:'RENAINF via parceiro',motivo:'Completa a promessa municipal/estadual/federal.'},
+ {id:'recall',nome:'Recall pendente',plano:'completa',par:0.50,pub:0,rec:'depois',fonte:'Senacon/montadoras (a validar)',publico:true,motivo:'Útil, mas pesa pouco na decisão de compra.'},
+ {id:'nota',nome:'Nota 0–100 com semáforo',plano:'essencial',par:0,pub:0,rec:'mvp',fonte:'regra própria',publico:true,motivo:'Quem não entende indicador entende cor.'},
+ {id:'valor',nome:'“Quanto vale de verdade” e “quanto oferecer”',plano:'completa',par:0,pub:0,rec:'mvp',fonte:'regra própria',publico:true,motivo:'Transforma o laudo em argumento de negociação.'},
+ {id:'compart',nome:'Link compartilhável (“vendedor verificado”)',plano:'completa',par:0,pub:0,rec:'mvp',fonte:'próprio',publico:true,motivo:'Abre a venda para quem vende, não só quem compra.'},
+ {id:'monit',nome:'Monitorar a placa (alertas)',plano:'completa',par:0.50,pub:0.50,rec:'mvp',fonte:'coleta + parceiro',motivo:'Recorrência; base do plano Pro.'},
+ {id:'whats',nome:'Consulta e laudo pelo WhatsApp',plano:'gratis',par:0.10,pub:0.10,rec:'depois',fonte:'API WhatsApp Business',motivo:'Canal do amazonense; entra na Fase 2.'},
+ {id:'cautelar',nome:'Vistoria cautelar (parceria ECV Manaus)',plano:'completa',par:null,pub:null,rec:'depois',fonte:'parceiro presencial (R$ 260)',motivo:'Comissão por agendamento; Fase 3.'}
+];
+// serviços além da placa (24/11/2026)
+ITENS.push(
+ {id:'e_modelo',cat:'entrada',nome:'FIPE por marca, modelo e ano (sem placa)',plano:'visitante',par:0,pub:0,rec:'mvp',fonte:'Parallelum (grátis)',publico:true,receita:'retenção',motivo:'Para quem ainda está escolhendo; traz tráfego de busca.'},
+ {id:'e_chassi',cat:'entrada',nome:'Consulta por chassi, RENAVAM ou motor',plano:'essencial',par:0.50,pub:0.50,rec:'depois',fonte:'parceiro (decodificação)',receita:'laudo',motivo:'Confere clonagem: placa × chassi × motor.'},
+ {id:'e_qr',cat:'entrada',nome:'Ler o QR code do documento (CRLV-e)',plano:'visitante',par:0,pub:0,rec:'depois',fonte:'QR do CRLV-e (validar o conteúdo)',publico:true,receita:'retenção',motivo:'Preenche sem digitar; validar se o QR traz a placa.'},
+ {id:'e_anuncio',cat:'entrada',nome:'Conferir o anúncio (o usuário cola o texto ou o link)',plano:'completa',par:0,pub:0,rec:'depois',fonte:'texto colado pelo usuário (sem raspar sites)',publico:true,receita:'laudo',motivo:'Golpe do falso intermediário: modelo, cor e preço batem?'},
+ {id:'vigiar',cat:'dono',nome:'Vigiar a minha placa (multas no Diário Oficial, IPVA, licenciamento)',plano:'gratis',par:0,pub:0,rec:'mvp',fonte:'Diário Oficial de Manaus + calendários Sefaz/Detran-AM',publico:true,receita:'retenção',motivo:'Só dado público; faz o usuário voltar. 1 placa no Grátis, mais placas no Pro.'},
+ {id:'cal_ipva',cat:'dono',nome:'Calendário de IPVA e licenciamento do AM',plano:'gratis',par:0,pub:0,rec:'mvp',fonte:'Sefaz-AM / Detran-AM',publico:true,receita:'retenção',motivo:'Lembrete com o desconto de bom condutor.'},
+ {id:'defesa',cat:'dono',nome:'Modelo de defesa ou recurso de multa, com o prazo do edital',plano:'essencial',par:0.05,pub:0.05,rec:'depois',fonte:'gerado automaticamente',publico:true,receita:'avulso R$ 9,90',motivo:'Prazo corre da publicação no Diário Oficial; é modelo, não serviço jurídico.'},
+ {id:'zfm_guia',cat:'dono',nome:'Passo a passo para retirar a restrição da Zona Franca',plano:'gratis',par:0,pub:0,rec:'mvp',fonte:'Detran-AM / Receita Federal',publico:true,receita:'comissão (despachante)',motivo:'Conteúdo local que ninguém tem; leva ao despachante parceiro.'},
+ {id:'q_pedir',cat:'vende',nome:'“Quanto pedir” (preço sugerido para vender)',plano:'completa',par:0,pub:0,rec:'mvp',fonte:'FIPE + laudo + estado informado',publico:true,receita:'laudo',motivo:'Abre o lado de quem vende.'},
+ {id:'contrato',cat:'vende',nome:'Modelo de contrato + lembrete de comunicar a venda',plano:'gratis',par:0,pub:0,rec:'mvp',fonte:'modelo próprio',publico:true,receita:'retenção',motivo:'Evita multa do comprador no nome de quem vendeu.'},
+ {id:'c_transf',cat:'compra',nome:'Custo da transferência no Detran-AM',plano:'gratis',par:0,pub:0,rec:'mvp',fonte:'tabela pública de taxas do Detran-AM',publico:true,receita:'comissão (despachante)',motivo:'Pergunta comum de quem compra.'},
+ {id:'c_ter',cat:'compra',nome:'Custo de ter o carro por mês',plano:'gratis',par:0,pub:0,rec:'depois',fonte:'FIPE + IPVA + médias de mercado',publico:true,receita:'comissão (seguro)',motivo:'Ajuda a decidir; leva à cotação de seguro.'},
+ {id:'c_comp',cat:'compra',nome:'Comparador: que carro cabe no meu orçamento',plano:'gratis',par:0,pub:0,rec:'depois',fonte:'FIPE',publico:true,receita:'retenção',motivo:'Tráfego de busca; baixa prioridade.'},
+ {id:'radar',cat:'leiloes',nome:'Radar de leilões públicos (Detran-AM, PNCP, prefeituras)',plano:'gratis',par:0,pub:0,rec:'mvp',fonte:'mesma coleta do LIC',publico:true,receita:'assinatura (alerta na hora no Pro)',motivo:'Grátis vê com 24 h de atraso; Pro recebe alerta na hora (regra do LIC).'},
+ {id:'pagar',cat:'comissao',nome:'Pagar ou parcelar débitos no app',plano:'gratis',par:0,pub:0,rec:'mvp',fonte:'Celcoin ou Zapay',receita:'comissão',motivo:'Receita sem custo de dado.'},
+ {id:'despachante',cat:'comissao',nome:'Despachante parceiro para a transferência',plano:'gratis',par:0,pub:0,rec:'depois',fonte:'despachantes de Manaus',receita:'comissão',motivo:'Fecha o ciclo da compra.'},
+ {id:'seguro',cat:'comissao',nome:'Cotação de seguro',plano:'gratis',par:0,pub:0,rec:'depois',fonte:'corretora parceira',receita:'comissão',motivo:'Boa comissão; exige corretora parceira registrada.'},
+ {id:'financ',cat:'comissao',nome:'Simulação de financiamento',plano:'gratis',par:0,pub:0,rec:'depois',fonte:'banco/financeira parceira',receita:'comissão por indicação',motivo:'Quem consulta está prestes a comprar.'},
+ {id:'estoque',cat:'empresa',nome:'Painel do estoque da revenda',plano:'pro',par:0,pub:0,rec:'depois',fonte:'laudos + monitoramento',publico:true,receita:'assinatura',motivo:'Base do Pro; entra depois do teste com o consumidor.'},
+ {id:'troca',cat:'empresa',nome:'Avaliação do carro recebido na troca',plano:'pro',par:0,pub:0,rec:'depois',fonte:'FIPE + laudo',publico:true,receita:'assinatura',motivo:'Revenda decide a troca em minutos.'},
+ {id:'frotas',cat:'empresa',nome:'Gestão de multas e documentos de frotas',plano:'empresa',par:0,pub:0,rec:'depois',fonte:'monitoramento + débitos',receita:'assinatura',motivo:'Locadoras e empresas com muitas placas.'},
+ {id:'marca',cat:'empresa',nome:'Laudo com a marca do despachante (white-label)',plano:'empresa',par:0,pub:0,rec:'depois',fonte:'próprio',publico:true,receita:'assinatura',motivo:'Despachante revende o nosso laudo.'}
+);
+const CATS={entrada:'Formas de entrada',laudo:'Laudo da placa',dono:'Para o dono do veículo',vende:'Para quem vende',compra:'Para quem compra',leiloes:'Radar de leilões',comissao:'Parceiros por comissão',empresa:'Para empresas',canal:'Canais'};
+ITENS.forEach(i=>{if(i.id==='whats')i.cat='canal';if(i.id==='cautelar'){i.cat='comissao';i.receita='comissão'}i.cat=i.cat||'laudo';i.receita=i.receita||(i.cat==='laudo'?'laudo':'retenção')});
+const ORDEM_CAT=Object.keys(CATS);
+const porCat=()=>ORDEM_CAT.map(c=>[c,ITENS.filter(i=>i.cat===c)]).filter(x=>x[1].length);
+const dec={},planoItem={};
+function recomendado(){ITENS.forEach(i=>{dec[i.id]=i.rec;planoItem[i.id]=i.plano});desenhaDec();desenhaPlanos();if($('svDono')&&typeof desenhaServicos==='function'){desenhaServicos();segEntrada()}if(atual)render()}
+const libera=(p,id)=>NIVEL[p]>=NIVEL[planoItem[id]]&&dec[id]!=='descartar';
+
+// ================= cenários fictícios =================
+const meses=['dez/25','jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov/26'];
+const CEN={
+ QZA1B23:{tipo:'carro',mod:'CHEVROLET ONIX 1.0 LT',ano:'2021/2022',cor:'Branca',cid:'Manaus/AM',cc:1000,q30:4,pedido:69500,
+  fipe:[72900,72600,72300,71900,71500,71200,70800,70400,70100,69700,69300,68990],deb:{ipva:0,mmun:0,mest:0,mfed:0},zfm:null,
+  r:{roubo:['ok','Nada consta'],gravame:['ok','Gravame baixado em 14/03/2024 (quitado)'],renajud:['ok','Sem restrição'],debitos:['ok','IPVA 2026 pago · licenciamento em dia'],mdiario:['ok','Nenhuma multa publicada'],zfm:['ok','Sem restrição tributária'],leilao_pub:['ok','Não aparece em leilões públicos'],leilao_priv:['ok','Nenhuma passagem'],ba:['ok','Sem indício'],mfed:['ok','Nenhuma'],recall:['ok','Nenhum pendente']}},
+ PHX4E56:{tipo:'carro',mod:'HYUNDAI HB20S 1.6 COMFORT',ano:'2020/2020',cor:'Prata',cid:'Manaus/AM',cc:1600,q30:11,pedido:74900,
+  fipe:[75200,74900,74400,74000,73700,73300,72900,72500,72200,71900,71600,71430],deb:{ipva:1785.75,mmun:260.32,mest:295.82,mfed:0},zfm:null,
+  r:{roubo:['ok','Nada consta'],gravame:['warn','ATIVO · alienação fiduciária desde 05/2022 — exija a quitação'],renajud:['ok','Sem restrição'],debitos:['bad','IPVA 2026 em atraso + 1 multa estadual'],mdiario:['warn','2 multas IMMU publicadas no Diário Oficial (10/2026)'],zfm:['ok','Sem restrição tributária'],leilao_pub:['ok','Não aparece em leilões públicos'],leilao_priv:['ok','Nenhuma passagem'],ba:['ok','Sem indício'],mfed:['ok','Nenhuma'],recall:['warn','1 recall pendente (airbag)']}},
+ OAB7C89:{tipo:'carro',mod:'TOYOTA COROLLA 2.0 XEI',ano:'2023/2024',cor:'Preta',cid:'Manaus/AM',cc:2000,q30:27,pedido:118000,
+  fipe:[131500,130800,130100,129400,128900,128300,127600,127000,126400,125900,125300,124800],deb:{ipva:4992,mmun:586.94,mest:0,mfed:880.41},zfm:{data:'03/2024'},
+  r:{roubo:['warn','Histórico: furto em 2024, recuperado'],gravame:['bad','ATIVO · alienação fiduciária'],renajud:['bad','Restrição de transferência ativa'],debitos:['bad','IPVA 2025 e 2026 em atraso'],mdiario:['warn','3 multas IMMU publicadas no Diário Oficial'],zfm:['warn','Comprado com isenção da ZFM em 03/2024: não sai do AM sem pagar o imposto'],leilao_pub:['ok','Não aparece em leilões públicos'],leilao_priv:['bad','1 leilão de seguradora · 08/2025 · média monta'],ba:['bad','Indício de busca e apreensão (intimação no DJEN)'],mfed:['bad','1 multa PRF · R$ 880,41'],recall:['ok','Nenhum pendente']}},
+ QZB2E34:{tipo:'moto',mod:'HONDA CG 160 FAN',ano:'2022/2023',cor:'Vermelha',cid:'Manacapuru/AM',cc:160,q30:6,pedido:15900,
+  fipe:[18900,18800,18700,18600,18500,18400,18300,18200,18100,18000,17900,17800],deb:{ipva:267,mmun:390.48,mest:0,mfed:0},zfm:null,
+  r:{roubo:['ok','Nada consta'],gravame:['ok','Sem gravame'],renajud:['ok','Sem restrição'],debitos:['warn','IPVA 2026 em atraso'],mdiario:['warn','2 multas IMMU publicadas no Diário Oficial'],zfm:['ok','Sem restrição tributária'],leilao_pub:['bad','Vendida em leilão público da Prefeitura de Manacapuru (frota inservível) · 03/2025'],leilao_priv:['ok','Nenhuma passagem'],ba:['ok','Sem indício'],mfed:['ok','Nenhuma'],recall:['ok','Nenhum pendente']}}
+};
+const PESO={roubo:25,ba:30,leilao_priv:25,leilao_pub:15,gravame:15,renajud:20,debitos:8,mdiario:3,mfed:4,zfm:6,recall:3};
+let atual=null,planoVer='completa',pedido=null,anosSemMulta=0,modoEntrada='placa',viaAnuncio=false,viaChassi=false,estadoVende=0;
+
+function consultar(p,origem){viaAnuncio=origem==='anuncio';viaChassi=origem==='chassi';p=(p||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(!/^[A-Z]{3}[0-9][A-Z0-9][0-9]{2}$/.test(p)){go('consulta');$('laudo').innerHTML='<div class="alert">Placa inválida. Use ABC1D23 ou ABC1234.</div>';return}
+ go('consulta');if($('pCon'))$('pCon').value=p;const k=Object.keys(CEN);atual={placa:p,...(CEN[p]||CEN[k[[...p].reduce((a,c)=>a+c.charCodeAt(0),0)%k.length]])};pedido=atual.pedido;
+ const passos=['FIPE (público)','Leilões públicos — PNCP e Detran-AM (base própria)','Diário Oficial de Manaus — multas publicadas (base própria)','Parceiro — roubo/furto, gravame, RENAJUD, leilão de seguradora','Detran-AM — débitos e restrição Zona Franca','Regras do AM + nota'];
+ let i=0;const el=$('prog');$('laudo').innerHTML='';const tick=()=>{el.innerHTML=passos.map((t,k)=>`<div class="${k<i?'done':k===i?'run':''}">${t}</div>`).join('');if(i++<passos.length)setTimeout(tick,170);else{el.innerHTML='';render()}};tick()}
+
+function segPlano(){$('segPlano').innerHTML=['visitante','gratis','essencial','completa'].map(p=>`<button class="${p===planoVer?'on':''}" onclick="planoVer='${p}';segPlano();render()">${NOMEP[p]}</button>`).join('')}
+function nota(){let n=100;Object.keys(PESO).forEach(id=>{if(!libera(planoVer,id)||dec[id]==='depois'||!atual.r[id])return;const s=atual.r[id][0];n-=s==='bad'?PESO[id]:s==='warn'?PESO[id]/2:0});return Math.max(5,Math.round(n))}
+function debTotal(){const d=atual.deb;let t=0;if(libera(planoVer,'debitos'))t+=d.ipva+d.mest;if(libera(planoVer,'mdiario'))t+=d.mmun;if(libera(planoVer,'mfed'))t+=d.mfed;return t}
+const lock=id=>`<div class="lockbox"><span class="ic lock">🔒</span><span>Disponível no <b>${NOMEP[planoItem[id]]}</b></span></div>`;
+const icon=s=>`<span class="ic ${s==='ok'?'ok':s==='warn'?'warn':'bad'}">${s==='ok'?'✓':'!'}</span>`;
+
+function render(){if(!atual)return;const L=$('laudo');const P=planoVer;const fipe=atual.fipe.at(-1);
+ const temNota=libera(P,'nota');const n=temNota?nota():null;const cor=n==null?css('mut'):n>=80?css('ok'):n>=50?css('warn'):css('bad');
+ const ver=n==null?'':n>=80?'Pode seguir com a compra':n>=50?'Negocie e resolva as pendências antes de pagar':'Não recomendamos comprar';
+ const alertas=Object.keys(atual.r).filter(id=>dec[id]==='mvp'&&atual.r[id][0]!=='ok').length;
+ const varPct=((fipe/atual.fipe[0]-1)*100).toFixed(1).replace('.',',');
+ let h=`<div class="card" style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">
+  <div class="mercosul"><div class="top">BRASIL</div><div class="num">${atual.placa}</div></div>
+  <div style="flex:1;min-width:240px"><h3 style="font-size:20px">${atual.mod} <span class="pill">${atual.tipo}</span></h3>
+   <div class="mut small">${atual.ano} · ${atual.cor} · ${atual.cid} · proprietário oculto (LGPD) · <span class="pill info">regras do AM ativas</span></div>
+   ${libera(P,'contador')?`<div class="small" style="margin-top:6px">🔎 Consultada <b>${atual.q30} vez(es)</b> nos últimos 30 dias ${atual.q30>=20?'<span class="pill warn">muito procurada</span>':''}</div>`:''}
+   <div style="margin-top:8px">${temNota?`<b style="color:${cor};font-size:17px">${ver}</b>`:`<span class="pill hl">Encontramos ${alertas} ponto(s) de atenção — veja no Essencial ou na Completa</span>`}</div></div>
+  <div style="text-align:center">${gauge(n,cor)}<div class="xs mut">${temNota?'nota do veículo':'nota no Essencial'}</div></div></div>`;
+ if(viaAnuncio&&dec.e_anuncio!=='descartar'){const vjA=fipe-(atual.r.leilao_priv[0]==='bad'?Math.round(fipe*.25):0)-atual.deb.ipva-atual.deb.mmun-atual.deb.mest-atual.deb.mfed;const acima=Math.round((pedido/vjA-1)*100);
+  h+=`<div class="card" style="margin-top:14px;border-color:${css('bad')}"><h3>Anúncio × laudo ${dec.e_anuncio==='depois'?'<span class="pill warn">depois</span>':''}</h3><div class="grid g4 small">
+  <div>${icon('ok')}Modelo confere (${atual.mod.split(' ').slice(0,2).join(' ')})</div><div>${icon('ok')}Cor confere (${atual.cor})</div>
+  <div>${icon('bad')}Anúncio diz “nunca foi a leilão” — o laudo encontrou leilão</div><div>${icon('warn')}Preço pedido ${acima}% acima do valor justo</div></div></div>`}
+ if(viaChassi&&dec.e_chassi!=='descartar')h+=`<div class="card" style="margin-top:14px"><h3>Placa × chassi × motor ${dec.e_chassi==='depois'?'<span class="pill warn">depois</span>':''}</h3><div class="small">${icon('ok')}O chassi informado pertence a esta placa e o número do motor confere — sem indício de clonagem (demonstração).</div></div>`;
+ const vj=libera(P,'valor');const leil=(libera(P,'leilao_priv')&&atual.r.leilao_priv[0]==='bad')||(libera(P,'leilao_pub')&&atual.r.leilao_pub[0]==='bad');
+ const descL=leil?Math.round(fipe*0.25):0,deb=debTotal(),justo=fipe-descL-deb,oferta=Math.round(justo*0.95);
+ h+=`<div class="grid g3" style="margin-top:14px">
+ <div class="card"><div style="display:flex;justify-content:space-between"><h3>Valor FIPE</h3><span class="pill hl">grátis</span></div>
+  <div class="kpi"><div class="n">${brl(fipe)}</div><div class="l">${varPct}% em 12 meses · ref. nov/2026</div></div>${line(atual.fipe,[meses[0],meses[11]])}
+  <div class="xs mut">Valor de tabela puro, sem ajuste por leilão.</div></div>
+ <div class="card"><h3>Quanto vale de verdade</h3>${vj?barsH([{l:'FIPE',v:fipe,c:css('info')},{l:'− desconto por leilão (25%)',v:-descL,c:css('bad')},{l:'− débitos a pagar',v:-deb,c:css('warn')},{l:'= valor justo',v:justo,c:css('ok')}],v=>brl(v),fipe):lock('valor')}</div>
+ <div class="card"><h3>Quanto oferecer</h3>${vj?`<div class="small">Preço pedido pelo vendedor: <input class="f" id="pedido" type="number" value="${pedido}" style="width:120px" onchange="pedido=+this.value;render()"></div>
+  ${barsH([{l:'Pedido',v:pedido,c:css('mut')},{l:'Valor justo',v:justo,c:css('ok')},{l:'Ofereça até',v:oferta,c:css('hl')}],brl,Math.max(pedido,fipe))}
+  <div class="kpi" style="margin-top:6px"><div class="n" style="color:${css('ok')}">${brl(Math.max(0,pedido-oferta))}</div><div class="l">de margem para negociar</div></div>`:lock('valor')}</div></div>`;
+ const d=atual.deb;const partes=[{l:'IPVA',v:libera(P,'debitos')?d.ipva:0,c:css('bad')},{l:'Multas municipais (Diário Oficial)',v:libera(P,'mdiario')?d.mmun:0,c:css('warn')},{l:'Multas estaduais',v:libera(P,'debitos')?d.mest:0,c:css('info')},{l:'Multas federais',v:libera(P,'mfed')?d.mfed:0,c:css('hl')}];
+ const aliq=atual.tipo==='moto'?0.015:atual.cc<=1000?0.015:0.02;const descBC=[0,.10,.15,.20][anosSemMulta];const ipva=fipe*aliq*(1-descBC);
+ h+=`<div class="grid g3" style="margin-top:14px">
+ <div class="card"><h3>Débitos</h3>${libera(P,'debitos')?donut(partes,brl(deb),'a pagar')+(deb>0&&dec.pagar!=='descartar'?`<button class="btn sm" style="margin-top:10px">${dec.pagar==='depois'?'(em breve) ':''}Pagar ou parcelar em até 12x</button>`:''):lock('debitos')}</div>
+ <div class="card"><h3>Simulador de IPVA 2027 · AM</h3>${libera(P,'ipva_sim')?`<div class="small">Anos sem multa: <select class="f" onchange="anosSemMulta=+this.value;render()">${[0,1,2,3].map(a=>`<option ${a===anosSemMulta?'selected':''} value="${a}">${a}${a===3?'+':''}</option>`).join('')}</select></div>
+  <div class="kpi" style="margin-top:8px"><div class="n">${brl(ipva)}</div><div class="l">alíquota ${(aliq*100).toFixed(1).replace('.',',')}% ${descBC?`· bom condutor −${descBC*100}%`:''} · até 3x de ${brl(ipva/3)}</div></div>
+  <div class="xs mut" style="margin-top:6px">Regras Sefaz-AM 2026 (conferir tabela oficial). Valor venal aproximado pela FIPE.</div>`:lock('ipva_sim')}</div>
+ <div class="card"><h3>Zona Franca de Manaus</h3>${libera(P,'zfm')?(atual.zfm?`<div class="small">${icon('warn')}<b>Restrição tributária ativa</b> (compra com isenção em ${atual.zfm.data})</div><ol class="small" style="padding-left:18px;margin:8px 0"><li>Receita Federal / Sefaz-AM: calcular o imposto e autorizar</li><li>Laudo de vistoria no Detran-AM</li><li>Pagar a taxa de baixa</li></ol><div class="xs mut">Só é problema se o carro for sair do AM.</div>`:`<div class="small">${icon('ok')}Sem restrição tributária: pode ser transferido para qualquer estado.</div>`):lock('zfm')}</div></div>`;
+ h+=`<h3 style="margin:18px 0 8px">Tudo o que verificamos</h3><div class="res">`;
+ ['roubo','gravame','renajud','debitos','mdiario','leilao_pub','leilao_priv','ba','mfed','recall'].forEach(id=>{const it=ITENS.find(x=>x.id===id);if(dec[id]==='descartar')return;const [s,t]=atual.r[id];const lib=libera(P,id);const dep=dec[id]==='depois';
+  h+=`<div class="item ${lib&&!dep?(s==='bad'?'bad':s==='warn'?'warn':''):''}"><div class="hd"><h3>${lib&&!dep?icon(s):'<span class="ic lock">·</span>'}${it.nome}</h3>${dep?'<span class="pill">em breve</span>':''}</div>
+  ${dep?'<div class="small mut">Planejado para depois.</div>':lib?`<div class="small">${t}</div>`:lock(id)}
+  <div class="src"><span class="pill ${it.publico?'ok':'info'}">${it.publico?'dado público':'parceiro'}</span>${it.fonte==='parceiro'?'':it.fonte}</div></div>`});
+ h+=`</div><div class="grid g2" style="margin-top:14px"><div class="card chk"><h3>Checklist antigolpe</h3>${libera(P,'antigolpe')?`
+  <label><input type="checkbox"> O modelo e a cor do anúncio batem com o laudo (${atual.mod.split(' ').slice(0,2).join(' ')}, ${atual.cor})</label>
+  <label><input type="checkbox"> Falei direto com o dono que está no documento, sem intermediário</label>
+  <label><input type="checkbox"> O pagamento vai para a conta do dono, nunca de terceiro</label>
+  <label><input type="checkbox"> Vi o veículo pessoalmente antes de pagar qualquer sinal</label>`:lock('antigolpe')}</div>
+ <div class="card"><h3>Ações</h3>${libera(P,'compart')?`<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm">🔗 Compartilhar laudo (vendedor verificado)</button><button class="btn sm ghost">🔔 Monitorar esta placa por 30 dias</button><button class="btn sm ghost">📄 Baixar PDF</button><button class="btn sm ghost">Agendar vistoria cautelar</button></div>`:`<div class="small">Laudo completo: <b>${brl(atual.tipo==='moto'?24.90:39.90)}</b> · Essencial: <b>R$ 19,90</b></div><div style="margin-top:10px;display:flex;gap:8px"><button class="btn sm" onclick="planoVer='completa';segPlano();render()">Ver completa</button><button class="btn sm ghost" onclick="planoVer='essencial';segPlano();render()">Ver essencial</button></div>`}</div></div>
+ <p class="xs mut" style="margin-top:12px">Laudo informativo com base nas fontes indicadas em ${new Date().toLocaleDateString('pt-BR')}. Não substitui a vistoria cautelar presencial. Dados de demonstração fictícios.</p>`;
+ L.innerHTML=h}
+
+// ================= planos =================
+const PLANOS=[
+ {id:'visitante',preco:'R$ 0',sub:'sem cadastro',li:['10 placas FIPE/dia','FIPE por modelo, sem placa','Gráfico FIPE 12 meses','Contador da placa']},
+ {id:'gratis',preco:'R$ 0',sub:'com cadastro',li:['30 placas FIPE/dia','Vigiar a minha placa (1)','Calendário e simulador de IPVA','Radar de leilões (24 h depois)','Contrato e custo da transferência','Checklist antigolpe','Pagar débitos no app']},
+ {id:'essencial',preco:'R$ 19,90',sub:'por placa',li:['Roubo/furto, gravame, RENAJUD','IPVA, licenciamento e multas','Multas do Diário Oficial','Zona Franca','Leilão público','Nota 0–100']},
+ {id:'completa',preco:'R$ 39,90',sub:'por placa · moto R$ 24,90',star:1,li:['Tudo do Essencial','Leilão de seguradora com fotos','Busca e apreensão, multas federais','Quanto vale, quanto oferecer e quanto pedir','Link “vendedor verificado”','30 dias monitorando']},
+ {id:'pro',preco:'R$ 199',sub:'por mês',li:['10 completas/mês (+R$ 24,90)','FIPE ilimitada','50 placas monitoradas','Radar de leilões na hora','Painel do estoque, avaliação de troca','3 usuários']},
+ {id:'empresa',preco:'R$ 599',sub:'por mês',li:['40 completas/mês (+R$ 19,90)','300 placas monitoradas','Gestão de frotas','API e usuários ilimitados','Laudo com a sua marca']}];
+function desenhaPlanos(){$('planCards').innerHTML=PLANOS.map(p=>`<div class="plan ${p.star?'star':''}">${p.star?'<span class="pill hl">recomendado</span>':''}<h3>${NOMEP[p.id]}</h3><div class="p">${p.preco}</div><div class="xs mut">${p.sub}</div><ul>${p.li.map(x=>`<li>${x}</li>`).join('')}</ul></div>`).join('');
+ const cols=['visitante','gratis','essencial','completa','pro','empresa'];
+ $('tPlanos').innerHTML=`<tr><th>Recurso</th>${cols.map(c=>`<th class="c">${NOMEP[c]}</th>`).join('')}</tr>`+porCat().map(([c,l])=>{l=l.filter(i=>dec[i.id]!=='descartar');return l.length?`<tr><td colspan="7" style="background:${css('soft')}"><b class="hl">${CATS[c]}</b></td></tr>`+l.map(i=>`<tr><td>${i.nome}${dec[i.id]==='depois'?' <span class="pill">depois</span>':''}</td>${cols.map(c=>`<td class="c">${libera(c,i.id)?`<span style="color:${css('ok')};font-weight:900">✓</span>`:'<span class="mut">—</span>'}</td>`).join('')}</tr>`).join(''):''}).join('');
+ $('gConc').innerHTML=barsH([{l:'Trakcar (Profissional)',v:84.90,c:css('mut')},{l:'AnyCar (B2C)',v:59.90,c:css('mut')},{l:'Concar leilão premium',v:49.90,c:css('mut')},{l:'Sonar Auto+ Completa (com regras do AM)',v:39.90,c:css('hl')},{l:'ZapCar completa',v:36,c:css('mut')},{l:'Sonar Auto+ Essencial',v:19.90,c:css('hl')}],brl,90);
+ const custo=custoLaudo(true,true);$('gMargem').innerHTML=donut([{l:'Custo dos dados',v:custo,c:css('bad')},{l:'Taxa de pagamento',v:2.08,c:css('warn')},{l:'Impostos (≈ 6%)',v:2.39,c:css('info')},{l:'Margem',v:39.90-custo-2.08-2.39,c:css('ok')}],brl(39.90),'preço')}
+
+// ================= painel revenda (fictício) =================
+const ESTOQUE=[['QZA1B23','Onix 1.0 2022','ok','—',68990],['PHX4E56','HB20S 1.6 2020','warn','IPVA em atraso',71430],['RTM3C21','Strada 1.4 2021','ok','Gravame baixado ontem',89500],['QZB2E34','CG 160 2023','bad','Leilão público',17800],['PXA9F87','Kwid 1.0 2022','warn','Nova multa no Diário Oficial',52300],['OAB7C89','Corolla 2.0 2024','bad','Busca e apreensão',124800],['QZC5D44','Compass 1.3 2023','ok','—',139900],['PHJ2B10','Biz 125 2022','ok','—',14200]];
+function desenhaPainel(){$('pKpis').innerHTML=[['38','placas no estoque'],['6','com alerta agora',css('warn')],['R$ 2,41 mi','valor FIPE do estoque'],['R$ 48 mil','prejuízo evitado no mês (carros recusados)',css('ok')]].map(k=>`<div class="card kpi"><div class="n" style="color:${k[2]||'inherit'}">${k[0]}</div><div class="l">${k[1]}</div></div>`).join('');
+ $('gEstoque').innerHTML=donut([{l:'Sem pendência',v:28,c:css('ok'),fmt:v=>v},{l:'Atenção',v:7,c:css('warn'),fmt:v=>v},{l:'Crítico',v:3,c:css('bad'),fmt:v=>v}],'38','placas');
+ $('gAlertas').innerHTML=barsH([{l:'Multa nova (Diário Oficial)',v:9,c:css('warn')},{l:'IPVA vencendo',v:6,c:css('info')},{l:'Gravame baixado',v:4,c:css('ok')},{l:'Leilão encontrado',v:2,c:css('bad')},{l:'Restrição judicial',v:1,c:css('bad')}],v=>v);
+ $('gMes').innerHTML=colunas([12,15,14,19,22,27],['jun','jul','ago','set','out','nov']);
+ $('tEstoque').innerHTML=`<tr><th>Placa</th><th>Veículo</th><th>Situação</th><th>Último alerta</th><th>FIPE</th></tr>`+ESTOQUE.map(e=>`<tr><td><b>${e[0]}</b></td><td>${e[1]}</td><td><span class="pill ${e[2]}">${e[2]==='ok'?'sem pendência':e[2]==='warn'?'atenção':'crítico'}</span></td><td class="small">${e[3]}</td><td>${brl(e[4])}</td></tr>`).join('')}
+
+// ================= base pública =================
+const FONTES=[['Tabela FIPE (Parallelum; BrasilAPI reserva)','API pública grátis','mensal','valor e histórico','ok','validada'],['PNCP — leilões (modalidades 1 e 13)','API pública (cliente do LIC)','diária','leilão público com placa','ok','validada'],['Detran-AM — editais de leilão e resenhas','PDF no site','semanal','veículo em pátio / leilão','ok','validada · leitor a construir'],['IMMU — editais de notificação (Diário Oficial de Manaus)','PDF público','diária','multas publicadas','ok','validada · leitor a construir'],['Sefaz-AM — regras do IPVA','lei/página','anual','simulador de IPVA','ok','validada'],['Senatran — frota','dados abertos','mensal','indicadores de mercado','ok','validada'],['Diário Oficial do AM e dos Municípios (AAM)','PDF','diária','leilões e multas do interior','warn','a validar'],['Querido Diário (OKBR)','API pública','diária','diários municipais','warn','a validar cobertura no AM'],['DJEN / Comunica (CNJ)','API pública','diária','indício de busca e apreensão','warn','a validar da AWS sa-east-1'],['Datajud (CNJ)','API com chave pública','mensal','indicador de ações de B&A','warn','a validar'],['PRF e Receita Federal — leilões','sites públicos','semanal','leilões federais','warn','a validar'],['Recall (Senacon/montadoras)','listas públicas','mensal','recall por modelo','warn','a validar']];
+function custoLaudo(publico,volume){return ITENS.filter(i=>i.cat==='laudo'&&dec[i.id]==='mvp'&&NIVEL[planoItem[i.id]]<=NIVEL.completa).reduce((s,i)=>{const v=(publico?i.pub:i.par)||0;return s+(volume&&!i.publico?v*0.7:v)},0)}
+function desenhaBase(){$('tFontes').innerHTML=`<tr><th>Fonte</th><th>Como lê</th><th>Frequência</th><th>Vira no laudo</th><th>Situação</th></tr>`+FONTES.map(f=>`<tr><td><b>${f[0]}</b></td><td class="small">${f[1]}</td><td class="small">${f[2]}</td><td class="small">${f[3]}</td><td><span class="pill ${f[4]}">${f[5]}</span></td></tr>`).join('');
+ const a=custoLaudo(false,false),b=custoLaudo(true,false),c=custoLaudo(true,true);
+ $('gCusto').innerHTML=barsH([{l:'Só parceiro',v:a,c:css('bad')},{l:'Com base pública',v:b,c:css('warn')},{l:'Com base pública + volume (−30%)',v:c,c:css('ok')},{l:'Meta',v:15,c:css('hl')}],brl,a);
+ $('gBase').innerHTML=colunas([1200,4800,9600,15100,21300,28000],['jan','fev','mar','abr','mai','jun'],css('info'))+'<div class="xs mut">placas com registro público (leilões + multas publicadas), projeção fictícia</div>'}
+
+// ================= expansão =================
+const UFP={RR:[2,0],AP:[4,0],AC:[0,1],AM:[1,1],PA:[3,1],MA:[5,1],CE:[6,1],RN:[7,1],RO:[1,2],MT:[2,2],TO:[3,2],PI:[5,2],PE:[6,2],PB:[7,2],MS:[2,3],GO:[3,3],DF:[4,3],BA:[5,3],SE:[6,3],AL:[7,3],SP:[3,4],MG:[4,4],ES:[5,4],PR:[3,5],RJ:[4,5],SC:[3,6],RS:[3,7]};
+const ONDA={AM:1,RR:2,AP:2,AC:2,RO:2,PA:2,TO:2,SP:3,MG:3,RJ:3,PR:3,RS:3,BA:3,GO:3,DF:3};
+const ONDAS=[[1,'Amazonas','jan–mar/2027','#e8ff59','Zona Franca, IPVA AM 2026, multas IMMU no Diário Oficial, leilões e resenhas do Detran-AM'],[2,'Norte','abr–jun/2027','#4ade80','Áreas de livre comércio (mesma lógica da ZFM), IPVA e leilões de cada Detran'],[3,'Grandes mercados','2º sem/2027','#60a5fa','IPVA de cada UF, multas das capitais, leilões estaduais'],[4,'Brasil','2028','#a1a1aa','Pacote mínimo: IPVA + leilões + multas da capital']];
+let ufSel='AM';
+function desenhaExp(){$('tiles').innerHTML=Object.entries(UFP).map(([u,[c,r]])=>`<div class="tile ${u===ufSel?'sel':''}" style="grid-column:${c+1};grid-row:${r+1};background:${ONDAS[(ONDA[u]||4)-1][3]}" onclick="ufSel='${u}';desenhaExp()">${u}</div>`).join('');
+ $('legend').innerHTML=ONDAS.map(o=>`<span style="--c:${o[3]}">Onda ${o[0]} · ${o[1]}</span>`).join('');
+ const o=ONDAS[(ONDA[ufSel]||4)-1];$('ufInfo').innerHTML=`<span class="pill" style="border-color:${o[3]};color:${o[3]}">Onda ${o[0]} · ${o[2]}</span><h2 style="margin-top:10px">${ufSel}</h2><p><b>Hoje:</b> laudo nacional (parceiro + FIPE + leilões públicos do PNCP).</p><p><b>Na onda ${o[0]}:</b> ${o[4]}.</p>${ufSel==='AM'?'<p class="small mut">Primeiro estado: regras já desenhadas no protótipo (Zona Franca, IPVA, Diário Oficial de Manaus).</p>':''}`;
+ $('tOndas').innerHTML=`<tr><th>Onda</th><th>Quando (ref.)</th><th>Estados</th><th>Regras novas</th></tr>`+ONDAS.map(o=>`<tr><td><span class="pill" style="border-color:${o[3]};color:${o[3]}">${o[0]} · ${o[1]}</span></td><td>${o[2]}</td><td class="small">${Object.keys(UFP).filter(u=>(ONDA[u]||4)===o[0]).join(', ')}</td><td class="small">${o[4]}</td></tr>`).join('')}
+
+// ================= decisão =================
+function desenhaDec(){$('tDec').innerHTML=`<tr><th>Recurso</th><th>Fonte</th><th>Custo parceiro</th><th>Custo c/ base pública</th><th>Receita</th><th>Recomendação</th><th>Plano mínimo</th><th>Sua decisão</th></tr>`+porCat().map(([c,lst])=>`<tr><td colspan="8" style="background:${css('soft')}"><b class="hl">${CATS[c]}</b> <span class="xs mut">${lst.length} itens</span></td></tr>`+lst.map(i=>`<tr><td><b>${i.nome}</b><div class="xs mut">${i.motivo}</div></td><td class="small">${i.fonte}</td><td>${i.par==null?'—':'≈'+brl(i.par)}</td><td>${i.pub==null?'—':i.publico&&i.pub===0?`<span class="pill ok">público R$ 0</span>`:'≈'+brl(i.pub)}</td><td class="small">${i.receita}</td>
+ <td><span class="pill ${i.rec==='mvp'?'ok':'warn'}">${i.rec==='mvp'?'MVP':'Depois'}</span><div class="xs mut">${NOMEP[i.plano]}</div></td>
+ <td><select class="f" onchange="planoItem['${i.id}']=this.value;desenhaDec();desenhaPlanos();desenhaServicos();if(atual)render()">${['visitante','gratis','essencial','completa','pro','empresa'].map(p=>`<option value="${p}" ${planoItem[i.id]===p?'selected':''}>${NOMEP[p]}</option>`).join('')}</select></td>
+ <td><div class="dec">${['mvp','depois','descartar'].map(o=>`<button class="${o} ${dec[i.id]===o?'on':''}" onclick="dec['${i.id}']='${o}';desenhaDec();desenhaPlanos();desenhaServicos();segEntrada();if(atual)render()">${o==='mvp'?'MVP':o==='depois'?'Depois':'Descartar'}</button>`).join('')}</div></td></tr>`).join('')).join('');
+ const a=custoLaudo(false,false),b=custoLaudo(true,false),c=custoLaudo(true,true),m=39.90-c-2.08-2.39;
+ $('sum').innerHTML=`<div>MVP: <b>${ITENS.filter(i=>dec[i.id]==='mvp').length}</b>/${ITENS.length}</div><div>Custo da Completa: <b>${brl(a)}</b> → base pública <b>${brl(b)}</b> → + volume <b>${brl(c)}</b></div><div>Margem na Completa: <b>${brl(m)} · ${Math.round(m/39.9*100)}%</b></div>`;
+ const g=o=>porCat().map(([c,l])=>{const x=l.filter(i=>dec[i.id]===o).map(i=>`${i.nome} [${NOMEP[planoItem[i.id]]}]`);return x.length?`\n  ${CATS[c]}: ${x.join('; ')}`:''}).join('')||' —';
+ $('resumo').value=`DECISÃO CAR v3 (${new Date().toLocaleDateString('pt-BR')})\nMVP:${g('mvp')}\nDepois:${g('depois')}\nDescartar:${g('descartar')}\nCusto da Completa: só parceiro ${brl(a)} · com base pública ${brl(b)} · com volume ${brl(c)} · margem ≈ ${brl(m)}`}
+function copiar(){try{navigator.clipboard.writeText($('resumo').value)}catch(e){}$('resumo').select()}
+
+// ================= estratégia =================
+function desenhaEstr(){const O=[['1','FIPE grátis (placa e modelo) + vigiar a minha placa + calendário do IPVA','R$ 0 a 0,06','retenção: o usuário volta'],['2','Radar de leilões públicos','R$ 0 (código do LIC)','assinatura Pro (alerta na hora)'],['3','Pagar débitos no app + agendar vistoria cautelar','R$ 0','comissão'],['4','Laudo Essencial e Completa','≈ R$ 15–21, só quando alguém paga','laudo avulso'],['5','Vendedor verificado, quanto pedir, contrato','R$ 0 (usa o laudo pago)','laudo + retenção'],['6','Revendas (Pro) e frotas (Empresa)','—','assinatura (depois do teste)']];
+ $('tOrdem').innerHTML=`<tr><th>Ordem</th><th>O quê</th><th>Custo por uso</th><th>Como ganha</th></tr>`+O.map(o=>`<tr><td><b class="hl" style="font-size:18px">${o[0]}</b></td><td>${o[1]}</td><td><span class="pill ${o[2].startsWith('R$ 0')?'ok':o[2]==='—'?'':'warn'}">${o[2]}</span></td><td class="small">${o[3]}</td></tr>`).join('');$('metas').innerHTML=[['30 mil','consultas FIPE grátis por mês'],['3–5%','do grátis vira laudo pago'],['1.000','laudos pagos por mês'],['25','revendas e despachantes no Pro'],['≤ R$ 15','custo do laudo completo'],['≥ 50%','margem bruta na Completa']].map(k=>`<div class="card kpi"><div class="n hl">${k[0]}</div><div class="l">${k[1]}</div></div>`).join('');
+ const fases=[['Fase 0','dez/26','Cotação de parceiros, 20 placas reais do AM, preço'],['Fase 1','jan–fev/27','MVP AM: FIPE grátis, Essencial, Completa, Pix, base pública (PNCP, Detran-AM, IMMU)'],['Fase 2','mar/27','Quanto oferecer, débitos pagáveis, WhatsApp, login'],['Fase 3','abr–jun/27','Pro (revenda), monitoramento, vistoria cautelar; onda 2 (Norte)'],['Fase 4','2º sem/27+','Onda 3 (grandes mercados), app mobile, Senatran direto']];
+ $('gTempo').innerHTML=fases.map((f,i)=>`<div style="display:grid;grid-template-columns:80px 100px 1fr;gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid ${css('line')}"><b>${f[0]}</b><span class="small mut">${f[1]}</span><div><div style="height:10px;margin-left:${i*16}%;width:${i===4?36:18}%;background:${css('hl')};border-radius:6px"></div><div class="small" style="margin-top:4px">${f[2]}</div></div></div>`).join('')}
+
+function heroCard(){$('heroCard').innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><div class="mercosul"><div class="top">BRASIL</div><div class="num">PHX4E56</div></div>${gauge(62,css('warn'))}</div>
+ <div class="small" style="margin-top:6px"><b style="color:${css('warn')}">Negocie antes de pagar</b> · consultada 11 vezes em 30 dias</div>
+ ${barsH([{l:'Pedido',v:74900,c:css('mut')},{l:'Valor justo',v:69088,c:css('ok')},{l:'Ofereça até',v:65634,c:css('hl')}],brl,76000)}`}
+// ================= formas de entrada =================
+const MODOS=[['placa','Placa',null],['modelo','Modelo (sem placa)','e_modelo'],['chassi','Chassi / RENAVAM / motor','e_chassi'],['qr','QR do documento','e_qr'],['anuncio','Anúncio','e_anuncio']];
+const MODELOS=[['CHEVROLET ONIX 1.0 LT 2022','QZA1B23'],['HYUNDAI HB20S 1.6 COMFORT 2020','PHX4E56'],['TOYOTA COROLLA 2.0 XEI 2024','OAB7C89'],['HONDA CG 160 FAN 2023','QZB2E34']];
+function segEntrada(){const vis=MODOS.filter(m=>!m[2]||dec[m[2]]!=='descartar');if(!vis.find(m=>m[0]===modoEntrada))modoEntrada='placa';
+ $('segEntrada').innerHTML=vis.map(m=>`<button class="${m[0]===modoEntrada?'on':''}" onclick="modoEntrada='${m[0]}';segEntrada()">${m[1]}${m[2]&&dec[m[2]]==='depois'?' ·depois':''}</button>`).join('');
+ const b=$('entradaBox');
+ if(modoEntrada==='placa')b.innerHTML=`<div class="plate" style="margin:0"><input id="pCon" maxlength="8" placeholder="ABC1D23" value="${atual?atual.placa:''}"><button class="btn" onclick="consultar(val('pCon'))">Consultar</button></div>`;
+ if(modoEntrada==='modelo')b.innerHTML=`<div style="display:flex;gap:8px;flex-wrap:wrap"><select class="f" id="selMod" style="font-size:16px;padding:11px;flex:1">${MODELOS.map((m,i)=>`<option value="${i}">${m[0]}</option>`).join('')}</select><button class="btn" onclick="fipeModelo(+val('selMod'))">Ver FIPE</button></div><div class="xs mut" style="margin-top:4px">Grátis, sem placa. Na versão real: marca → modelo → ano, pela API pública da FIPE.</div>`;
+ if(modoEntrada==='chassi')b.innerHTML=`<div class="plate" style="margin:0"><input id="pCh" maxlength="17" placeholder="9BWZZZ377VT004251" style="letter-spacing:1px;font-size:18px"><button class="btn" onclick="consultar('PHX4E56','chassi')">Consultar</button></div><div class="xs mut" style="margin-top:4px">Demonstração: qualquer chassi abre a placa PHX4E56.</div>`;
+ if(modoEntrada==='qr')b.innerHTML=`<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button class="btn" onclick="consultar('PHX4E56')">📷 Ler o QR code do CRLV-e</button><span class="small mut">Demonstração: preenche a placa PHX4E56.</span></div>`;
+ if(modoEntrada==='anuncio')b.innerHTML=`<textarea id="txtAnuncio" style="min-height:70px;font:14px system-ui">Corolla XEi 2024 preto, único dono, nunca foi a leilão, R$ 118.000. Chama no zap.</textarea><button class="btn" style="margin-top:6px" onclick="consultar('OAB7C89','anuncio')">Conferir anúncio</button><span class="xs mut"> Cole o texto ou o link; não lemos sites de terceiros.</span>`;
+ const i=$('pCon');if(i)i.addEventListener('keydown',e=>{if(e.key==='Enter')consultar(e.target.value)})}
+function fipeModelo(i){const [nome,pl]=MODELOS[i];const c=CEN[pl];atual=null;$('laudo').innerHTML=`<div class="grid g2"><div class="card"><div style="display:flex;justify-content:space-between"><h3>${nome}</h3><span class="pill hl">grátis</span></div><div class="kpi"><div class="n">${brl(c.fipe.at(-1))}</div><div class="l">${((c.fipe.at(-1)/c.fipe[0]-1)*100).toFixed(1).replace('.',',')}% em 12 meses · ref. nov/2026</div></div>${line(c.fipe,[meses[0],meses[11]])}</div>
+ <div class="card"><h3>E agora?</h3><p class="small">Achou um ${nome.split(' ').slice(1,2).join(' ')} à venda? Digite a placa para saber se ele tem multa, financiamento, leilão ou restrição da Zona Franca.</p><button class="btn sm" onclick="modoEntrada='placa';segEntrada();consultar('${pl}')">Consultar a placa de um anúncio (demo)</button>${dec.c_comp!=='descartar'?`<p class="xs mut" style="margin-top:10px">Comparador por orçamento: ${dec.c_comp==='depois'?'em breve':'disponível'}.</p>`:''}</div></div>`}
+
+// ================= serviços =================
+function badge(id){const d=dec[id];return d==='descartar'?'<span class="pill bad">descartado</span>':`<span class="pill ${d==='mvp'?'ok':'warn'}">${d==='mvp'?'MVP':'depois'} · ${NOMEP[planoItem[id]]}</span>`}
+const off=id=>dec[id]==='descartar';
+const blk=(id,html)=>off(id)?`<div class="small mut" style="opacity:.6">Descartado na Decisão ★.</div>`:html;
+function desenhaServicos(){
+ const hoje=new Date(2026,10,24),prazo=new Date(2026,11,5),dias=Math.round((prazo-hoje)/864e5);const ipva=71430*0.02*0.85;
+ $('svDono').innerHTML=`<div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><h3>Meu carro — vigiar a minha placa</h3>${badge('vigiar')}</div>`+blk('vigiar',`
+  <div style="display:flex;gap:12px;align-items:center;margin:8px 0"><div class="mercosul" style="min-width:130px"><div class="top">BRASIL</div><div class="num" style="font-size:22px">PHX4E56</div></div><div class="small">HB20S 1.6 2020 · <b>4 avisos</b></div></div>
+  <div class="item warn" style="margin:8px 0"><div class="small">${icon('warn')}<b>Multa publicada no Diário Oficial de Manaus</b> em 05/11/2026 — avanço de sinal, R$ 293,47 (fictício). A carta pode não ter chegado.</div>
+   <div class="xs mut" style="margin-top:6px">Prazo de defesa: <b style="color:${css('warn')}">${dias} dias</b> (até 05/12/2026)</div><div style="height:10px;background:${css('soft')};border-radius:6px;margin-top:4px"><div style="height:100%;width:${(30-dias)/30*100}%;background:${css('warn')};border-radius:6px"></div></div>
+   <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">${off('defesa')?'':`<button class="btn sm">${dec.defesa==='depois'?'(em breve) ':''}Gerar defesa · R$ 9,90</button>`}${off('pagar')?'':`<button class="btn sm ghost">${dec.pagar==='depois'?'(em breve) ':''}Pagar com desconto de 20%</button>`}</div></div>
+  ${off('cal_ipva')?'':`<div class="small" style="padding:5px 0">${icon('ok')}<b>IPVA 2027:</b> cota única com bom condutor (−15%) ≈ <b>${brl(ipva)}</b> · vence em 31/01/2027 (fictício) ${dec.cal_ipva==='depois'?'<span class="pill warn">depois</span>':''}</div>
+  <div class="small" style="padding:5px 0">${icon('ok')}<b>Licenciamento 2027:</b> pela placa final 6 → jun/2027 (fictício)</div>`}
+  <div class="small" style="padding:5px 0">${icon('warn')}<b>Recall pendente:</b> airbag do passageiro</div>
+  ${off('zfm_guia')?'':`<div class="small" style="padding:5px 0">${icon('ok')}<b>Zona Franca:</b> sem restrição · <a style="text-decoration:underline;cursor:pointer">ver o passo a passo para retirar a restrição</a> ${dec.zfm_guia==='depois'?'<span class="pill warn">depois</span>':''}</div>`}`);
+ const LOTES=[['Detran-AM · 5º leilão (27/11)','45','VW Gol 1.0 2014','recuperável',9800,24500],['Detran-AM · 5º leilão (27/11)','112','Honda CG 150 2016','recuperável',3200,9900],['Detran-AM · 5º leilão (27/11)','203','Fiat Palio 2009','sucata',1500,null],['PRF-AM (a validar)','18','Toyota Hilux 2015','recuperável',62000,118900],['Pref. de Manacapuru (PNCP)','3','Honda CG 160 2023','recuperável',8900,17800]];
+ $('svRadar').innerHTML=`<div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><h3>Radar de leilões públicos</h3>${badge('radar')}</div>`+blk('radar',`<div class="xs mut">Data do leilão do Detran-AM real; lotes fictícios. Grátis vê 24 h depois; Pro recebe alerta na hora.</div>
+  <table style="margin-top:8px"><tr><th>Leilão</th><th>Lote</th><th>Veículo</th><th>Lance inicial</th><th>FIPE</th></tr>${LOTES.map(l=>`<tr><td class="xs">${l[0]}</td><td>${l[1]}</td><td class="small">${l[2]} <span class="pill ${l[3]==='sucata'?'bad':'info'}">${l[3]}</span></td><td>${brl(l[4])}</td><td class="small">${l[5]?brl(l[5]):'—'}</td></tr>`).join('')}</table>
+  <h3 style="margin-top:12px">Quanto abaixo da FIPE</h3>${barsH(LOTES.filter(l=>l[5]).map(l=>({l:`${l[2]} (lote ${l[1]})`,v:Math.round((1-l[4]/l[5])*100),c:css('ok')})),v=>v+'%',100)}
+  <button class="btn sm ghost" style="margin-top:8px">🔔 Alerta de leilão de motos em Manaus (Pro)</button>`);
+ const fp=71430,adj=[0.03,0,-0.08][estadoVende],pedir=Math.round(fp*(1+adj)/100)*100,rapido=Math.round(pedir*0.95/100)*100;
+ $('svVende').innerHTML=`<div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><h3>Para quem vende</h3>${badge('q_pedir')}</div>`+blk('q_pedir',`<div class="small">HB20S 2020 · FIPE ${brl(fp)} · estado: <select class="f" onchange="estadoVende=+this.value;desenhaServicos()">${['ótimo','bom','regular'].map((e,i)=>`<option value="${i}" ${i===estadoVende?'selected':''}>${e}</option>`).join('')}</select></div>
+  ${barsH([{l:'Anuncie por',v:pedir,c:css('hl')},{l:'Para vender rápido',v:rapido,c:css('ok')},{l:'Débitos a quitar antes',v:2341.89,c:css('warn')}],brl,pedir)}<div class="xs mut">Laudo limpo no anúncio (“vendedor verificado”) ajuda a sustentar o preço.</div>`)
+  +`<div style="margin-top:12px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><b class="small">Contrato e comunicação de venda</b>${badge('contrato')}</div>`+blk('contrato',`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px"><button class="btn sm ghost">📄 Modelo de contrato</button><button class="btn sm ghost">⏰ Lembrar de comunicar a venda</button></div>`);
+ $('svCompra').innerHTML=`<div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><h3>Custo da transferência · AM</h3>${badge('c_transf')}</div>`+blk('c_transf',donut([{l:'Taxa de transferência',v:251.90,c:css('info')},{l:'Vistoria',v:117.60,c:css('warn')},{l:'Documento (CRV/CRLV)',v:61.20,c:css('ok')},{l:'Despachante (opcional)',v:300,c:css('mut')}],brl(730.70),'total')+'<div class="xs mut">Valores fictícios; na versão real, tabela pública do Detran-AM.</div>')
+  +`<div style="margin-top:12px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><b class="small">Custo de ter o carro por mês</b>${badge('c_ter')}</div>`+blk('c_ter',barsH([{l:'Combustível',v:600,c:css('bad')},{l:'Seguro (estimado)',v:280,c:css('info')},{l:'Manutenção',v:150,c:css('warn')},{l:'IPVA (÷12)',v:119,c:css('ok')}],brl,600)+'<div class="small"><b>≈ R$ 1.149 por mês</b> · HB20S 2020 (fictício)</div>');
+ const fontes=[['Laudos avulsos',20000,null],['Assinaturas Pro',4975,'estoque'],['Comissão de débitos',3600,'pagar'],['Defesa de multa',1500,'defesa'],['Vistoria cautelar',1300,'cautelar'],['Despachante',900,'despachante'],['Seguro',1200,'seguro']].filter(f=>!f[2]||!off(f[2]));
+ $('svComissao').innerHTML=`<h3>Parceiros por comissão</h3><div class="xs mut">nós não pagamos nada; recebemos se o usuário fechar</div>`+['pagar','cautelar','despachante','seguro','financ'].map(id=>{const it=ITENS.find(x=>x.id===id);return `<div style="display:flex;justify-content:space-between;gap:6px;padding:5px 0;border-bottom:1px solid ${css('line')}"><span class="small" style="${off(id)?'text-decoration:line-through;opacity:.5':''}">${it.nome}</span>${badge(id)}</div>`}).join('')
+  +`<h3 style="margin-top:12px">Receita do mês 6 por fonte</h3><div class="xs mut">projeção fictícia, AM</div>${barsH(fontes.map(f=>({l:f[0],v:f[1],c:f[2]?css('ok'):css('hl')})),brl,20000)}`;
+ $('svEmpresa').innerHTML=`<h3>Para empresas (depois do teste com o consumidor)</h3><div class="grid g4" style="margin-top:8px">`+['estoque','troca','frotas','marca'].map(id=>{const it=ITENS.find(x=>x.id===id);return `<div class="item" style="${off(id)?'opacity:.5':''}"><div class="small"><b>${it.nome}</b></div><div class="xs mut" style="margin:4px 0">${it.motivo}</div>${badge(id)}</div>`}).join('')+`</div>`}
+
+function desenhaTudo(){heroCard();desenhaPlanos();desenhaPainel();desenhaBase();desenhaExp();desenhaEstr();desenhaServicos();segEntrada()}
+$('pIni').addEventListener('keydown',e=>{if(e.key==='Enter')consultar(e.target.value)});
+recomendado();segPlano();desenhaTudo();
+</script>
+</body>
+</html>

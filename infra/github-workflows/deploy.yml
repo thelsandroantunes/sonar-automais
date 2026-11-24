@@ -1,0 +1,113 @@
+name: Deploy (AWS)
+
+# Tudo que fica no ar, num só workflow (sub-etapas 2.3 a 2.5):
+#   1. pacote das Lambdas (sem Docker) + cdk deploy SonarEmail SonarApi SonarSite SonarMonitoramento
+#   2. build do site (login pelo Cognito, API em https://api.<domínio>) + envio do .zip para o Amplify Hosting
+# Roda a cada push na main que mexa no backend, no site, no dicionário ou na infra; ou à mão (Actions > Run workflow).
+# Acesso à AWS por OIDC (sem chave): papel em vars.AWS_PAPEL_DEPLOY, que assume os papéis do `cdk bootstrap`.
+on:
+  push:
+    branches: [main]
+    paths: ["backend/**", "web/**", "dados-referencia/**", "infra/**", "scripts/pacote_lambda.sh",
+            ".github/workflows/deploy.yml"]
+  workflow_dispatch:
+
+permissions:
+  id-token: write   # OIDC
+  contents: read
+
+concurrency: { group: deploy, cancel-in-progress: false }
+
+env:
+  AWS_REGION: us-east-2
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - uses: actions/setup-node@v4
+        with: { node-version: "22", cache: npm, cache-dependency-path: web/package-lock.json }
+
+      - name: Pacote das Lambdas
+        run: bash scripts/pacote_lambda.sh
+
+      - name: Dependências do CDK e testes da infra
+        working-directory: infra
+        run: |
+          pip install -q -r requirements.txt
+          python -m pytest -q testes
+
+      - name: Entrar na AWS (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_PAPEL_DEPLOY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Implantar API e site (CDK)
+        working-directory: infra
+        run: npx -y aws-cdk@2 deploy SonarEmail SonarApi SonarSite SonarMonitoramento --require-approval never --outputs-file saidas.json
+
+      - name: Ler saídas
+        id: saidas
+        working-directory: infra
+        run: |
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import json
+          s = json.load(open("saidas.json"))
+          api, site = s["SonarApi"], s["SonarSite"]
+          print(f"api={api['ApiUrl']}")
+          print(f"cliente={api['ClienteId']}")
+          print(f"cognito_dominio={api['CognitoDominio']}")
+          print(f"google={api['GoogleAtivo']}")
+          print(f"api_dominio={site['ApiDominioUrl']}")
+          print(f"app={site['AmplifyAppId']}")
+          print(f"site={site['SiteUrl']}")
+          print(f"amplify={site['AmplifyUrl']}")
+          PY
+
+      - name: Montar o site (login pelo Cognito)
+        working-directory: web
+        env:
+          VITE_AUTH: cognito
+          VITE_COGNITO_REGIAO: ${{ env.AWS_REGION }}
+          VITE_COGNITO_CLIENTE: ${{ steps.saidas.outputs.cliente }}
+          VITE_API_URL: ${{ steps.saidas.outputs.api_dominio }}
+          VITE_COGNITO_DOMINIO: ${{ steps.saidas.outputs.cognito_dominio }}
+          VITE_GOOGLE: ${{ steps.saidas.outputs.google }}
+        run: |
+          npm ci
+          npm run build
+
+      - name: Publicar no Amplify Hosting
+        env:
+          APP: ${{ steps.saidas.outputs.app }}
+        run: |
+          (cd web/dist && zip -qr ../../site.zip .)
+          read -r JOB URL <<< "$(aws amplify create-deployment --app-id "$APP" --branch-name main \
+            --query "[jobId, zipUploadUrl]" --output text)"
+          curl -sS --fail -X PUT -H "Content-Type: application/zip" --upload-file site.zip "$URL"
+          aws amplify start-deployment --app-id "$APP" --branch-name main --job-id "$JOB" >/dev/null
+          for i in $(seq 1 60); do
+            ST=$(aws amplify get-job --app-id "$APP" --branch-name main --job-id "$JOB" --query "job.summary.status" --output text)
+            echo "publicação: $ST"
+            case "$ST" in SUCCEED) break ;; FAILED|CANCELLED) exit 1 ;; esac
+            sleep 5
+          done
+          aws amplify get-domain-association --app-id "$APP" --domain-name sonarautomais.com.br \
+            --query "domainAssociation.[domainStatus, statusReason]" --output text || true
+
+      - name: Teste rápido
+        env:
+          API: ${{ steps.saidas.outputs.api }}
+          API_DOM: ${{ steps.saidas.outputs.api_dominio }}
+          SITE: ${{ steps.saidas.outputs.site }}
+          AMPLIFY: ${{ steps.saidas.outputs.amplify }}
+        run: |
+          echo "Site: $SITE (provisório: $AMPLIFY) · API: $API_DOM" >> "$GITHUB_STEP_SUMMARY"
+          curl -sS --max-time 30 -w '\nAPI direta: HTTP %{http_code}\n' "$API/saude"
+          curl -sS --max-time 30 -w '\nAPI no domínio: HTTP %{http_code}\n' "$API_DOM/saude" || echo "(DNS/certificado da API ainda propagando)"
+          curl -sS --max-time 30 -o /dev/null -w 'Site Amplify: HTTP %{http_code}\n' "$AMPLIFY/" || true
+          curl -sS --max-time 30 -o /dev/null -w 'Site no domínio: HTTP %{http_code}\n' "$SITE/" || echo "(domínio do Amplify pode levar até 30 min na 1ª vez)"

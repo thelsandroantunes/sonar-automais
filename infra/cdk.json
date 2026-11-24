@@ -1,0 +1,17 @@
+{
+  "app": "python app.py",
+  "context": {
+    "regiao": "sa-east-1",
+    "github_repo": "thelsandroantunes/sonar-automais",
+    "github_repo_ids": "",
+    "@aws-cdk/aws-iam:minimizePolicies": true,
+    "@aws-cdk/core:checkSecretUsage": true,
+    "@aws-cdk/core:defaultCrossStackReferences": "strong",
+    "dominio": "sonarautomais.com.br",
+    "zona_id": "",
+    "ses_cognito": false,
+    "google_login": true,
+    "asaas": "",
+    "alertas_emails": []
+  }
+}

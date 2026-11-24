@@ -1,0 +1,9 @@
+# Pacote das Lambdas (API e borda). boto3 já vem no runtime da AWS.
+fastapi>=0.115
+mangum>=0.19
+psycopg[binary,pool]>=3.2
+httpx>=0.27
+pyjwt[crypto]>=2.9
+python-dotenv>=1.0
+email-validator>=2.1
+maxminddb>=2.6

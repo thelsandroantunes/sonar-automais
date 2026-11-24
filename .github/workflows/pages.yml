@@ -1,0 +1,33 @@
+# Demonstração no GitHub Pages: publica a pasta prototipo/ (HTML único, dados fictícios).
+# Ativar uma vez: Settings → Pages → Build and deployment → Source: GitHub Actions.
+# Endereço: https://thelsandroantunes.github.io/sonar-automais/
+name: Pages
+
+on:
+  push:
+    branches: [main]
+    paths: ["prototipo/**", ".github/workflows/pages.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: prototipo }
+      - id: deploy
+        uses: actions/deploy-pages@v4

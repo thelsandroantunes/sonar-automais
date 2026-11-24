@@ -1,0 +1,22 @@
+{
+ "_aviso": "FICTÍCIO. Substituir pela tabela de taxas vigente do Detran-AM.",
+ "transferencia": {
+  "taxa_transferencia": 251.9,
+  "vistoria": 117.6,
+  "emissao_documento": 61.2
+ },
+ "despachante_medio": 300.0,
+ "licenciamento_por_final": {
+  "1": "2027-04",
+  "2": "2027-04",
+  "3": "2027-05",
+  "4": "2027-05",
+  "5": "2027-06",
+  "6": "2027-06",
+  "7": "2027-07",
+  "8": "2027-08",
+  "9": "2027-09",
+  "0": "2027-10"
+ },
+ "ipva_cota_unica_vencimento": "2027-01-31"
+}

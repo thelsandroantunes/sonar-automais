@@ -1,0 +1,85 @@
+{
+ "_aviso": "FICTÍCIO. Formato inspirado nos editais de notificação da IMMU publicados no Diário Oficial do Município.",
+ "registros": [
+  {
+   "placa": "PHX4E56",
+   "auto": "MT09990001",
+   "codigo_infracao": "605-0/1",
+   "descricao": "Avançar o sinal vermelho",
+   "valor": 130.16,
+   "publicado_em": "2026-11-05",
+   "prazo_defesa": "2026-12-05",
+   "edicao": "DOM 9999 Cad. 2"
+  },
+  {
+   "placa": "PHX4E56",
+   "auto": "MT09990002",
+   "codigo_infracao": "554-1/2",
+   "descricao": "Estacionar em local proibido",
+   "valor": 130.16,
+   "publicado_em": "2026-10-20",
+   "prazo_defesa": "2026-11-19",
+   "edicao": "DOM 9988 Cad. 2"
+  },
+  {
+   "placa": "OAB7C89",
+   "auto": "MT09990003",
+   "codigo_infracao": "745-5/0",
+   "descricao": "Velocidade até 20% acima da máxima",
+   "valor": 130.16,
+   "publicado_em": "2026-11-12",
+   "prazo_defesa": "2026-12-12",
+   "edicao": "DOM 9994 Cad. 2"
+  },
+  {
+   "placa": "OAB7C89",
+   "auto": "MT09990004",
+   "codigo_infracao": "746-3/0",
+   "descricao": "Velocidade entre 20% e 50% acima da máxima",
+   "valor": 195.23,
+   "publicado_em": "2026-10-02",
+   "prazo_defesa": "2026-11-01",
+   "edicao": "DOM 9975 Cad. 2"
+  },
+  {
+   "placa": "OAB7C89",
+   "auto": "MT09990005",
+   "codigo_infracao": "518-5/1",
+   "descricao": "Estacionar na calçada",
+   "valor": 261.55,
+   "publicado_em": "2026-09-15",
+   "prazo_defesa": "2026-10-15",
+   "edicao": "DOM 9962 Cad. 2"
+  },
+  {
+   "placa": "QZB2E34",
+   "auto": "MT09990006",
+   "codigo_infracao": "605-0/1",
+   "descricao": "Avançar o sinal vermelho",
+   "valor": 195.24,
+   "publicado_em": "2026-11-18",
+   "prazo_defesa": "2026-12-18",
+   "edicao": "DOM 9998 Cad. 2"
+  },
+  {
+   "placa": "QZB2E34",
+   "auto": "MT09990007",
+   "codigo_infracao": "703-0/1",
+   "descricao": "Conduzir sem capacete afivelado",
+   "valor": 195.24,
+   "publicado_em": "2026-10-28",
+   "prazo_defesa": "2026-11-27",
+   "edicao": "DOM 9983 Cad. 2"
+  },
+  {
+   "placa": "PXA9F87",
+   "auto": "MT09990008",
+   "codigo_infracao": "554-1/2",
+   "descricao": "Estacionar em local proibido",
+   "valor": 130.16,
+   "publicado_em": "2026-11-21",
+   "prazo_defesa": "2026-12-21",
+   "edicao": "DOM 9999 Cad. 2"
+  }
+ ]
+}

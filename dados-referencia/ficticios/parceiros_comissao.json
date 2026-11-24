@@ -1,0 +1,36 @@
+{
+ "_aviso": "FICTÍCIO. Percentuais e valores a negociar.",
+ "parceiros": [
+  {
+   "id": "pagar_debitos",
+   "nome": "Pagar ou parcelar débitos",
+   "parceiro": "Celcoin ou Zapay",
+   "comissao": "≈ 2% do valor pago"
+  },
+  {
+   "id": "vistoria",
+   "nome": "Vistoria cautelar",
+   "parceiro": "ECV de Manaus",
+   "preco": 260,
+   "comissao": "≈ 10%"
+  },
+  {
+   "id": "despachante",
+   "nome": "Despachante",
+   "parceiro": "despachantes de Manaus",
+   "comissao": "≈ R$ 30 por serviço"
+  },
+  {
+   "id": "seguro",
+   "nome": "Cotação de seguro",
+   "parceiro": "corretora parceira",
+   "comissao": "≈ 10% do prêmio"
+  },
+  {
+   "id": "financiamento",
+   "nome": "Simulação de financiamento",
+   "parceiro": "banco/financeira",
+   "comissao": "por indicação"
+  }
+ ]
+}

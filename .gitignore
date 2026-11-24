@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Node
+node_modules/
+dist/
+dev-dist/
+*.tsbuildinfo
+
+# Ambiente e segredos
+.env
+*.env
+!.env.example
+
+# Dados locais (legado: SQLite)
+*.db
+*.sqlite
+cache/
+
+# AWS CDK
+cdk.out/
+
+# Sistema
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
+
+# calibração: download bruto do PNCP (grande); os relatórios .md/.csv podem ir para o Git
+dados-referencia/calibracao/editais-*.json
+
+# Pacote das Lambdas (scripts/pacote_lambda.sh)
+build/
+infra/saidas.json
